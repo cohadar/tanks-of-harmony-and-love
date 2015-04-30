@@ -3,4 +3,4 @@ Network Multiplayer tank game in Love2D engine.
 
 Currently in development. ETA: 15 days.
 
-
+<img src="https://github.com/cohadar/tanks-of-harmony-and-love/blob/master/screenshot.png">
