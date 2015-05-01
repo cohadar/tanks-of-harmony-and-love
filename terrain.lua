@@ -9,7 +9,7 @@ VISIBLE_SQUARES_Y = 0
 
 -------------------------------------------------------------------------------
 function m_terrain.init()
-	love.graphics.setBackgroundColor(0x00, 0x00, 0x00, 0xFF)
+	--love.graphics.setBackgroundColor(0x00, 0x00, 0x00, 0xFF)
 	VISIBLE_SQUARES_X = math.floor(SCREEN_WIDTH / MAP_SQUARE) + 2
 	VISIBLE_SQUARES_Y = math.floor(SCREEN_HEIGHT / MAP_SQUARE) + 2
 end

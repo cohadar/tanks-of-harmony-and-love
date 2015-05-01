@@ -21,7 +21,7 @@ function love.load()
 	--g_camera_x = -math.floor( SCREEN_WIDTH / 2 )
 	--g_camera_y = -math.floor( SCREEN_HEIGHT / 2 )
 
-	love.mouse.setVisible( false )
+	love.mouse.setVisible( true )
 
 	g_tank_base = love.graphics.newImage("base.png")
 	g_tank_turret = love.graphics.newImage("turret.png")
@@ -63,6 +63,7 @@ function love.draw()
 	love.graphics.push()
 	love.graphics.translate(SCREEN_WIDTH_HALF - g_camera_x, SCREEN_HEIGHT_HALF - g_camera_y)	
 	m_terrain.draw()
+	love.graphics.setColor(0xFF, 0xFF, 0xFF, 0xFF)
 	m_tank.draw()
 	love.graphics.pop()
 end
