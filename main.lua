@@ -1,15 +1,13 @@
 io.stdout:setvbuf("no")
 
-MAP_WIDTH  = 1024 -- squares
-MAP_HEIGHT = 1024 -- squares
-MAP_SQUARE = 64 -- pixels
-
 SCREEN_WIDTH  = 0
 SCREEN_HEIGHT = 0
 
-g_camera_x = 0.0
-g_camera_y = 0.0
+-- camera uses terrain coordinate system
+g_camera_x = 8 * 64
+g_camera_y = 6 * 64
 
+m_terrain = require "terrain"
 m_tank = require "tank"
 package.loaded["tank"] = nil
 
@@ -17,15 +15,17 @@ package.loaded["tank"] = nil
 function love.load()
 	SCREEN_WIDTH  = love.graphics.getWidth()
 	SCREEN_HEIGHT = love.graphics.getHeight()
+	SCREEN_WIDTH_HALF  = math.floor( SCREEN_WIDTH / 2 )
+	SCREEN_HEIGHT_HALF = math.floor( SCREEN_HEIGHT / 2 )
 
-	g_camera_x = -math.floor( SCREEN_WIDTH / 2 )
-	g_camera_y = -math.floor( SCREEN_HEIGHT / 2 )
+	--g_camera_x = -math.floor( SCREEN_WIDTH / 2 )
+	--g_camera_y = -math.floor( SCREEN_HEIGHT / 2 )
 
 	love.mouse.setVisible( false )
 
 	g_tank_base = love.graphics.newImage("base.png")
 	g_tank_turret = love.graphics.newImage("turret.png")
-	love.graphics.setBackgroundColor(0xAD, 0x81, 0x50, 0xFF)
+	m_terrain.init()
 end
 
 -------------------------------------------------------------------------------
@@ -60,7 +60,11 @@ end
 
 -------------------------------------------------------------------------------
 function love.draw()
+	love.graphics.push()
+	love.graphics.translate(SCREEN_WIDTH_HALF - g_camera_x, SCREEN_HEIGHT_HALF - g_camera_y)	
+	m_terrain.draw()
 	m_tank.draw()
+	love.graphics.pop()
 end
 
 -------------------------------------------------------------------------------

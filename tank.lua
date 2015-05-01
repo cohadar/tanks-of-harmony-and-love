@@ -1,8 +1,8 @@
 --- @module snake
 local m_tank = {}
 
-tank_x = 0.0
-tank_y = 0.0
+tank_x = 100.0
+tank_y = 100.0
 tank_angle = 0.0
 turret_angle = 0.0
 
@@ -13,22 +13,30 @@ turret_angle_velocity = 0.0
 
 -------------------------------------------------------------------------------
 function m_tank.up()
-	print("up")
+	tank_y = tank_y - 32 
+	g_camera_x = tank_x
+	g_camera_y = tank_y
 end
 
 -------------------------------------------------------------------------------
 function m_tank.down()
-	print("down")
+	tank_y = tank_y + 32
+	g_camera_x = tank_x
+	g_camera_y = tank_y	
 end
 
 -------------------------------------------------------------------------------
 function m_tank.left()
-	print("left")
+	tank_x = tank_x - 32
+	g_camera_x = tank_x
+	g_camera_y = tank_y	
 end
 
 -------------------------------------------------------------------------------
 function m_tank.right()
-	print("right")
+	tank_x = tank_x + 32
+	g_camera_x = tank_x
+	g_camera_y = tank_y	
 end
 
 -------------------------------------------------------------------------------
@@ -38,16 +46,13 @@ end
 
 -------------------------------------------------------------------------------
 function m_tank.draw()
-	local cx = 500
-	local cy = 400
-	local x = cx - math.floor(g_tank_base:getWidth() / 2)
-	local y = cy - math.floor(g_tank_base:getHeight() / 2)
+	local x = tank_x - math.floor(g_tank_base:getWidth() / 2)
+	local y = tank_y - math.floor(g_tank_base:getHeight() / 2)
 	love.graphics.draw(g_tank_base, x, y)
- 	x = cx - math.floor(g_tank_turret:getWidth() / 2)
-	y = cy - math.floor(g_tank_turret:getHeight() / 2)
+ 	x = tank_x - math.floor(g_tank_turret:getWidth() / 2)
+	y = tank_y - math.floor(g_tank_turret:getHeight() / 2)
 	love.graphics.draw(g_tank_turret, x, y - 50)
 end
-
 
 -------------------------------------------------------------------------------
 return m_tank
