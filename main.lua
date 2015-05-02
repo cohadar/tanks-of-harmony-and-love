@@ -39,22 +39,27 @@ function love.keypressed(key)
 		love.event.push("quit")
 		return
 	end
-	if key == "up" then
-		m_tank.up()
-	elseif key == "down" then
-		m_tank.down()
-	elseif key == "left" then
-		m_tank.left()
-	elseif key == "right" then
-		m_tank.right()
-	elseif key == "w" then
-		m_tank.up()
-	elseif key == "s" then
-		m_tank.down()
-	elseif key == "a" then
-		m_tank.left()
-	elseif key == "d" then
-		m_tank.right()		
+	if key     == "up"    or key == "w" then
+		m_tank.upPressed()
+	elseif key == "down"  or key == "s" then
+		m_tank.downPressed()
+	elseif key == "left"  or key == "a" then
+		m_tank.leftPressed()
+	elseif key == "right" or key == "d" then
+		m_tank.rightPressed()
+	end
+end
+
+-------------------------------------------------------------------------------
+function love.keyreleased(key)
+	if key     == "up"    or key == "w" then
+		m_tank.upReleased()
+	elseif key == "down"  or key == "s" then
+		m_tank.downReleased()
+	elseif key == "left"  or key == "a" then
+		m_tank.leftReleased()
+	elseif key == "right" or key == "d" then
+		m_tank.rightReleased()
 	end
 end
 
