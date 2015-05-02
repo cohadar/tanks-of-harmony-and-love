@@ -7,3 +7,7 @@ Currently in development. ETA: 15 days.
 
 ## day1 goal: make tank move and turret turn.
   * basic game loop done
+  * basic angle/drawing done
+  * camera/tarrain code is more complex than I presumed.
+
+## day2 goal: finish tank move/velocities code
