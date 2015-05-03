@@ -27,7 +27,7 @@ end
 function m_client.update( dt )
 	t = t + dt
 	if t > updaterate then
-		local datagram = serpent.dump( { entity = entity, x = m_tank.getX(), y = m_tank.getY() } )
+		local datagram = serpent.dump( { entity = entity, x = m_tank.getX(), y = m_tank.getY(), timestamp = os:clock() } )
     	host:broadcast( datagram )
     	--print( datagram )
     	t = t - updaterate
@@ -41,6 +41,7 @@ function m_client.update( dt )
 				-- print( "Got message: ", event.data, event.peer )
 				local ok, res = serpent.load( event.data )
 				if ok then
+					print( os:clock() - res.timestamp, res.timestamp  )
 					m_tank.setXY( res.x, res.y )
 				end
 			elseif event.type == "disconnect" then
