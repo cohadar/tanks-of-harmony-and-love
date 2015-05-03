@@ -14,6 +14,8 @@ package.loaded["tank"] = nil
 
 -------------------------------------------------------------------------------
 function love.load()
+-- client.lua
+
 	SCREEN_WIDTH  = love.graphics.getWidth()
 	SCREEN_HEIGHT = love.graphics.getHeight()
 	SCREEN_WIDTH_HALF  = math.floor( SCREEN_WIDTH / 2 )
@@ -79,6 +81,7 @@ end
 
 -------------------------------------------------------------------------------
 function love.quit()
+	m_client.quit()
 	print("asta la vista baby")
 end
 

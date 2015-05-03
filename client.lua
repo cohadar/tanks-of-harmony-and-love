@@ -1,8 +1,10 @@
 --- @module client
 local m_client = {}
 
-local socket = require "socket"
-local address, port = "localhost", 12345
+serpent = require "serpent"
+require "enet"
+local host = nil
+local server = nil
 
 local entity -- entity is what we'll be controlling
 local updaterate = 0.1 -- how long to wait, in seconds, before requesting an update
@@ -13,9 +15,9 @@ local udp
 
 -------------------------------------------------------------------------------
 function m_client.init()
-	udp = socket.udp()
-	udp:settimeout( 0 )
-	udp:setpeername( address, port )
+	host = enet.host_create()
+	server = host:connect("localhost:12345")
+
 	math.randomseed( os.time() )
     entity = tostring( math.random( 99999 ) )
     t = 0
@@ -25,27 +27,30 @@ end
 function m_client.update( dt )
 	t = t + dt
 	if t > updaterate then
-		local datagram = string.format( "%s %s %d %d", entity, 'at', m_tank.getX(), m_tank.getY() )
-    	udp:send( datagram )
+		local datagram = serpent.dump( { entity = entity, x = m_tank.getX(), y = m_tank.getY() } )
+    	host:broadcast( datagram )
+    	--print( datagram )
     	t = t - updaterate
 	end
 	repeat
-		data, msg = udp:receive()
-		if data then
-			ent, cmd, parms = data:match( "^(%S*) (%S*) (.*)" )
-			if cmd == 'at' then
-                local x, y = parms:match( "^(%-?[%d.e]*) (%-?[%d.e]*)$" )
-                assert( x and y )
-                x, y = tonumber( x ), tonumber( y )
-                world[ent] = {x=x, y=y}
-                m_tank.setXY( x, y )
-            else
-                print( "unrecognised command:", cmd, "in: ", data )
-            end
-        elseif msg ~= 'timeout' then
-            error( "Network error: " .. tostring( msg ) )
-        end
-	until not data
+		event = host:service(0)
+		if event then
+			if event.type == "connect" then
+				print( "Connected to", event.peer )
+			elseif event.type == "receive" then
+				-- print( "Got message: ", event.data, event.peer )
+				local ok, res = serpent.load( event.data )
+				if ok then
+					m_tank.setXY( res.x, res.y )
+				end
+			elseif event.type == "disconnect" then
+				print( "disconnect" )
+				-- TODO: handle disconnect gracefully
+			else 
+				print( "unknown event.type: ", event.type )
+			end
+		end
+	until not event
 end
 
 -------------------------------------------------------------------------------
@@ -54,6 +59,12 @@ function m_client.draw()
     for k, v in pairs(world) do
         love.graphics.print(k, v.x, v.y)
     end
+end
+
+-------------------------------------------------------------------------------
+function m_client.quit()
+	server:disconnect()
+	host:flush()
 end
 
 -------------------------------------------------------------------------------

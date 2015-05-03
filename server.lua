@@ -2,70 +2,21 @@
 -- game server for "Tanks of Harmony and Love"
 -- standalone Lua app, not run by love2D engine
 -- you will need luasocket installed, use https://luarocks.org/#quick-start
+-- brew install enet || apt-get install enet
+-- sudo luarocks install enet
 -------------------------------------------------------------------------------
-local socket = require "socket"
-local udp = socket.udp()
+require "enet"
 
-udp:settimeout(0)
-udp:setsockname('*', 12345)
+local host_address = "localhost:12345"
+local host = enet.host_create( host_address )
+print("starting server", host_address)
 
-local world = {} -- the empty world-state
-local data, msg_or_ip, port_or_nil
-local entity, cmd, parms
-
-local running = true
-
-local last_mirror = socket.gettime()
-local mirror_interval = 5.0 -- millis
-local do_mirror = false
-
-print "Beginning server loop."
-while running do
-	local t = socket.gettime()
-	if last_mirror + mirror_interval < t then
-		last_mirror = t
-		do_mirror = true
-		print( t )
-	end
-	data, msg_or_ip, port_or_nil = udp:receivefrom()
-    if data then
-        -- more of these funky match paterns!
-        entity, cmd, parms = data:match( "^(%S*) (%S*) (.*)" )
-	 	if cmd == 'move' then
-	        local x, y = parms:match("^(%-?[%d.e]*) (%-?[%d.e]*)$")
-	        assert(x and y) -- validation is better, but asserts will serve.
-	        -- don't forget, even if you matched a "number", the result is still a string!
-	        -- thankfully conversion is easy in lua.
-	        x, y = tonumber(x), tonumber(y)
-	        -- and finally we stash it away
-	        local ent = world[entity] or {x=0, y=0}
-	        world[entity] = {x=ent.x+x, y=ent.y+y}
-	    elseif cmd == 'at' then
-	    	print( data ) 
-	        local x, y = parms:match("^(%-?[%d.e]*) (%-?[%d.e]*)$")
-	        assert(x and y) -- validation is better, but asserts will serve.
-	        x, y = tonumber(x), tonumber(y)
-	        if do_mirror then 
-	        	do_mirror = false
-	        	x, y = y, x
-	        	udp:sendto(string.format("%s %s %d %d", entity, 'at', x, y), msg_or_ip,  port_or_nil)
-	        end
-	        world[entity] = {x=x, y=y}
-	    elseif cmd == 'update' then
-	        for k, v in pairs(world) do
-	            udp:sendto(string.format("%s %s %d %d", k, 'at', v.x, v.y), msg_or_ip,  port_or_nil)
-	        end
-	    elseif cmd == 'quit' then
-	        running = false;        
-        else
-            print("unrecognised command:", cmd)
-        end
-    elseif msg_or_ip ~= 'timeout' then
-        error("Unknown network error: "..tostring(msg))
-    end
-    socket.sleep(0.01)
+while true do
+  local event = host:service(1)
+  if event and event.type == "receive" then
+    --print("Got message: ", event.data, event.peer)
+    event.peer:send(event.data)
+  end
 end
-
-print "Thank you."
 
 
