@@ -8,6 +8,28 @@ VISIBLE_SQUARES_X = 0
 VISIBLE_SQUARES_Y = 0
 
 -------------------------------------------------------------------------------
+function m_terrain.safe_x(x)
+	if x < 0 then
+		return 0
+	end
+	if x > MAP_WIDTH * MAP_SQUARE then
+		return MAP_WIDTH * MAP_SQUARE
+	end
+	return x
+end
+
+-------------------------------------------------------------------------------
+function m_terrain.safe_y(y)
+	if y < 0 then
+		return 0
+	end
+	if y > MAP_HEIGHT * MAP_SQUARE then
+		return MAP_HEIGHT * MAP_SQUARE
+	end
+	return y
+end
+
+-------------------------------------------------------------------------------
 function m_terrain.init()
 	--love.graphics.setBackgroundColor(0x00, 0x00, 0x00, 0xFF)
 	VISIBLE_SQUARES_X = math.floor(SCREEN_WIDTH / MAP_SQUARE) + 2

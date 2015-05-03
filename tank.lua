@@ -9,7 +9,7 @@ turret_angle = 0.0
 
 tank_velocity = 0.0
 tank_angle_velocity = 0.0
-turret_angle_velocity = 0.0
+turret_angle_velocity = math.pi / 64
 
 -- drawing properties
 turret_center_x = 21.0
@@ -69,12 +69,29 @@ end
 
 -------------------------------------------------------------------------------
 function m_tank.update(dt)
-	tank_x = tank_x + tank_velocity * math.cos( tank_angle )
-	tank_y = tank_y + tank_velocity * math.sin( tank_angle )
+	tank_x = m_terrain.safe_x( tank_x + tank_velocity * math.cos( tank_angle ) )
+	tank_y = m_terrain.safe_y( tank_y + tank_velocity * math.sin( tank_angle ) )
 	g_camera_x = tank_x
 	g_camera_y = tank_y	
-	turret_angle = ( turret_angle + dt ) % ( 2 * math.pi )
 	tank_angle = tank_angle + tank_angle_velocity
+
+	
+	local mouse_angle = math.atan2( love.mouse.getY() - SCREEN_HEIGHT_HALF, love.mouse.getX() - SCREEN_WIDTH_HALF )
+	turret_angle = math.atan2( math.sin( turret_angle ), math.cos( turret_angle ) )
+	
+	if math.abs(mouse_angle - turret_angle) < 0.1 then
+		turret_angle = mouse_angle
+	else
+		mouse_angle = mouse_angle + math.pi
+		local angle_diff = mouse_angle - turret_angle
+		angle_diff = math.atan2(math.sin(angle_diff), math.cos(angle_diff))
+		if angle_diff < 0 then
+			turret_angle = turret_angle + turret_angle_velocity
+		end
+		if angle_diff > 0 then
+			turret_angle = turret_angle - turret_angle_velocity
+		end	
+	end
 end
 
 -------------------------------------------------------------------------------
