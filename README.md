@@ -17,3 +17,5 @@ Currently in development. ETA: 13 days.
   * remember to draw sprites in zero angle direction
 
 ### day3 goal: basic networking
+  * created a luasocket server that flips tank x/y every 5 sec
+   

@@ -1,4 +1,4 @@
---- @module snake
+--- @module tank
 local m_tank = {}
 
 -- movement properties
@@ -17,6 +17,21 @@ turret_center_y = 28.0
 turret_base_offset = 10
 base_center_x = 64
 base_center_y = 38
+
+-------------------------------------------------------------------------------
+function m_tank.getX()
+	return tank_x
+end
+
+-------------------------------------------------------------------------------
+function m_tank.getY()
+	return tank_y
+end
+
+-------------------------------------------------------------------------------
+function m_tank.setXY(x, y)
+	tank_x, tank_y = x, y
+end
 
 -------------------------------------------------------------------------------
 function m_tank.upPressed()

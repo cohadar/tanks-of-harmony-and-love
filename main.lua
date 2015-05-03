@@ -9,6 +9,7 @@ g_camera_y = 6 * 64
 
 m_terrain = require "terrain"
 m_tank = require "tank"
+m_client = require "client"
 package.loaded["tank"] = nil
 
 -------------------------------------------------------------------------------
@@ -26,11 +27,13 @@ function love.load()
 	g_tank_base = love.graphics.newImage("base.png")
 	g_tank_turret = love.graphics.newImage("turret.png")
 	m_terrain.init()
+	m_client.init()
 end
 
 -------------------------------------------------------------------------------
-function love.update(dt)
-	m_tank.update(dt)
+function love.update( dt )
+	m_tank.update( dt )
+	m_client.update( dt )
 end
 
 -------------------------------------------------------------------------------
@@ -71,6 +74,7 @@ function love.draw()
 	love.graphics.setColor(0xFF, 0xFF, 0xFF, 0xFF)
 	m_tank.draw()
 	love.graphics.pop()
+	m_client.draw()
 end
 
 -------------------------------------------------------------------------------
