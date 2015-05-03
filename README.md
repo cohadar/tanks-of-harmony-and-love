@@ -18,4 +18,4 @@ Currently in development. ETA: 13 days.
 
 ### day3 goal: basic networking
   * created a luasocket server that flips tank x/y every 5 sec
-   
+  * replaced raw luasocket with lua-enet + serpent 
