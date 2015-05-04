@@ -11,6 +11,10 @@ m_terrain = require "terrain"
 m_tank = require "tank"
 m_client = require "client"
 package.loaded["tank"] = nil
+serpent = require "serpent"
+
+tank = m_tank.new()
+
 
 -------------------------------------------------------------------------------
 function love.load()
@@ -34,8 +38,8 @@ end
 
 -------------------------------------------------------------------------------
 function love.update( dt )
-	m_tank.update( dt )
-	m_client.update( dt )
+	m_tank.update( tank, dt )
+	m_client.update( tank, dt )
 end
 
 -------------------------------------------------------------------------------
@@ -45,26 +49,26 @@ function love.keypressed(key)
 		return
 	end
 	if key     == "up"    or key == "w" then
-		m_tank.upPressed()
+		m_tank.upPressed( tank )
 	elseif key == "down"  or key == "s" then
-		m_tank.downPressed()
+		m_tank.downPressed( tank )
 	elseif key == "left"  or key == "a" then
-		m_tank.leftPressed()
+		m_tank.leftPressed( tank )
 	elseif key == "right" or key == "d" then
-		m_tank.rightPressed()
+		m_tank.rightPressed( tank )
 	end
 end
 
 -------------------------------------------------------------------------------
 function love.keyreleased(key)
 	if key     == "up"    or key == "w" then
-		m_tank.upReleased()
+		m_tank.upReleased( tank )
 	elseif key == "down"  or key == "s" then
-		m_tank.downReleased()
+		m_tank.downReleased( tank )
 	elseif key == "left"  or key == "a" then
-		m_tank.leftReleased()
+		m_tank.leftReleased( tank )
 	elseif key == "right" or key == "d" then
-		m_tank.rightReleased()
+		m_tank.rightReleased( tank )
 	end
 end
 
@@ -74,7 +78,7 @@ function love.draw()
 	love.graphics.translate(SCREEN_WIDTH_HALF - g_camera_x, SCREEN_HEIGHT_HALF - g_camera_y)	
 	m_terrain.draw()
 	love.graphics.setColor(0xFF, 0xFF, 0xFF, 0xFF)
-	m_tank.draw()
+	m_tank.draw( tank )
 	love.graphics.pop()
 	m_client.draw()
 end

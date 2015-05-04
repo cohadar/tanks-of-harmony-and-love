@@ -7,7 +7,7 @@ local host = nil
 local server = nil
 
 local entity -- entity is what we'll be controlling
-local updaterate = 0.1 -- how long to wait, in seconds, before requesting an update
+local UPDATE_INTERVAL = 0.1 -- how long to wait, in seconds, before requesting an update
 
 local world = {} -- the empty world-state
 local t
@@ -24,13 +24,13 @@ function m_client.init()
 end
 
 -------------------------------------------------------------------------------
-function m_client.update( dt )
+function m_client.update( tank, dt )
 	t = t + dt
-	if t > updaterate then
-		local datagram = serpent.dump( { entity = entity, x = m_tank.getX(), y = m_tank.getY(), timestamp = os:clock() } )
+	if t > UPDATE_INTERVAL then
+		local datagram = serpent.dump( { entity = entity, x = m_tank.getX( tank ), y = m_tank.getY( tank ), timestamp = os:clock() } )
     	host:broadcast( datagram )
     	--print( datagram )
-    	t = t - updaterate
+    	t = t - UPDATE_INTERVAL
 	end
 	repeat
 		event = host:service(0)
@@ -42,7 +42,7 @@ function m_client.update( dt )
 				local ok, res = serpent.load( event.data )
 				if ok then
 					print( os:clock() - res.timestamp, res.timestamp  )
-					m_tank.setXY( res.x, res.y )
+					m_tank.setXY( tank, res.x, res.y )
 				end
 			elseif event.type == "disconnect" then
 				print( "disconnect" )
