@@ -21,3 +21,4 @@ Currently in development. ETA: 12 days.
   * replaced raw luasocket with lua-enet + serpent 
 
 ### day4 goal: two player networking
+  * you can see enemy tanks!!! \o/ \o/ \o/

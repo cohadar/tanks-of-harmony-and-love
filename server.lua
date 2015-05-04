@@ -6,49 +6,55 @@
 -- sudo luarocks install enet
 -------------------------------------------------------------------------------
 require "enet"
-local serpent = require "serpent"
+serpent = require "serpent"
 
 local host_address = "localhost:12345"
 local host = enet.host_create( host_address )
-local t = os.time()
-local blink_interval = 5.0 -- sec
-local last_blink_time = t
-local last_player_id = 0
-
-local world = {}
-
+local tanks = {}
+local UPDATE_INTERVAL = 0.1 -- sec
 
 -------------------------------------------------------------------------------
 local function on_connect( event ) 
-    print( "connect", event.peer:index() )
-    world[ event.peer:index() ] = {}
+    print( "connect", event.peer:index(), os.time() )
+    local gram = serpent.dump( { type = "index", index = event.peer:index() } ) 
+    event.peer:send( gram )
 end
 
 -------------------------------------------------------------------------------
 local function on_disconnect( event )
     print( "disconnect", event.peer:index() )
-    world[ event.peer:index() ] = {}
+    tanks[ event.peer:index() ] = nil
 end
 
 -------------------------------------------------------------------------------
 local function on_receive( event )
     t = os.time()
-    if last_blink_time + blink_interval < t then
-        last_blink_time = t
-        ok, gram = serpent.load( event.data )
-        if ok then
-            -- randomize tank location
-            gram.x, gram.y = math.random( 16*64 ), math.random( 12*64 )
-            print( "blink", gram.x, gram.y )
-            event.peer:send( serpent.dump(gram) )
+    ok, gram = serpent.load( event.data )
+    if ok then
+        if gram.type == "tank" then
+            tanks[ event.peer:index() ] = gram.tank
+        else
+            print( "unknown gram.type", gram.type, event.data )
         end
-    end    
+    end
+end
+
+-------------------------------------------------------------------------------
+local function on_update()
+    --print( "update", serpent.dump(tanks) )
+    for index, tank in pairs( tanks ) do 
+        print( "update", index )
+        local gram = serpent.dump( { type = "tank", index = index, tank = tank } )
+        host:broadcast( gram ) 
+    end
 end
 
 -------------------------------------------------------------------------------
 print( "starting server", host_address )
+local t = os.time()
+local last_update_time = t
 while true do
-    local event = host:service( 1 )
+    local event = host:service( 100 )
     if event then
         if event.type == "receive" then
             on_receive( event )
@@ -60,6 +66,12 @@ while true do
             print( "unknown event.type", event.type )
         end
     end
+    on_update()
+    -- t = os.time()
+    -- if last_update_time + UPDATE_INTERVAL > t then
+    --     last_update_time = t
+    --     on_update()
+    -- end
 end
 
 

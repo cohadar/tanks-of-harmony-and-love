@@ -10,11 +10,10 @@ g_camera_y = 6 * 64
 m_terrain = require "terrain"
 m_tank = require "tank"
 m_client = require "client"
-package.loaded["tank"] = nil
 serpent = require "serpent"
 
-tank = m_tank.new()
-
+g_tanks = {}
+localhost_tank = m_tank.new()
 
 -------------------------------------------------------------------------------
 function love.load()
@@ -38,8 +37,8 @@ end
 
 -------------------------------------------------------------------------------
 function love.update( dt )
-	m_tank.update( tank, dt )
-	m_client.update( tank, dt )
+	m_tank.update( localhost_tank, dt )
+	m_client.update( localhost_tank, dt )
 end
 
 -------------------------------------------------------------------------------
@@ -49,26 +48,26 @@ function love.keypressed(key)
 		return
 	end
 	if key     == "up"    or key == "w" then
-		m_tank.upPressed( tank )
+		m_tank.upPressed( localhost_tank )
 	elseif key == "down"  or key == "s" then
-		m_tank.downPressed( tank )
+		m_tank.downPressed( localhost_tank )
 	elseif key == "left"  or key == "a" then
-		m_tank.leftPressed( tank )
+		m_tank.leftPressed( localhost_tank )
 	elseif key == "right" or key == "d" then
-		m_tank.rightPressed( tank )
+		m_tank.rightPressed( localhost_tank )
 	end
 end
 
 -------------------------------------------------------------------------------
 function love.keyreleased(key)
 	if key     == "up"    or key == "w" then
-		m_tank.upReleased( tank )
+		m_tank.upReleased( localhost_tank )
 	elseif key == "down"  or key == "s" then
-		m_tank.downReleased( tank )
+		m_tank.downReleased( localhost_tank )
 	elseif key == "left"  or key == "a" then
-		m_tank.leftReleased( tank )
+		m_tank.leftReleased( localhost_tank )
 	elseif key == "right" or key == "d" then
-		m_tank.rightReleased( tank )
+		m_tank.rightReleased( localhost_tank )
 	end
 end
 
@@ -78,9 +77,14 @@ function love.draw()
 	love.graphics.translate(SCREEN_WIDTH_HALF - g_camera_x, SCREEN_HEIGHT_HALF - g_camera_y)	
 	m_terrain.draw()
 	love.graphics.setColor(0xFF, 0xFF, 0xFF, 0xFF)
-	m_tank.draw( tank )
+	if m_client.is_connected() then
+		for key, tank in pairs( g_tanks ) do 
+			m_tank.draw( tank )
+		end
+	else
+		m_tank.draw( localhost_tank )
+	end
 	love.graphics.pop()
-	m_client.draw()
 end
 
 -------------------------------------------------------------------------------

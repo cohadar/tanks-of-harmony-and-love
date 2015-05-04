@@ -1,34 +1,37 @@
 --- @module client
 local m_client = {}
 
-serpent = require "serpent"
+require "serpent"
 require "enet"
+
 local host = nil
 local server = nil
 
-local entity -- entity is what we'll be controlling
 local UPDATE_INTERVAL = 0.1 -- how long to wait, in seconds, before requesting an update
 
-local world = {} -- the empty world-state
 local t
 local udp
+local connected = false
+local index_on_server = 0
 
 -------------------------------------------------------------------------------
-function m_client.init()
+function m_client.is_connected()
+	return connected
+end
+
+-------------------------------------------------------------------------------
+function m_client.init( g_tanks )
 	host = enet.host_create()
 	server = host:connect("localhost:12345")
-
-	math.randomseed( os.time() )
-    entity = tostring( math.random( 99999 ) )
     t = 0
 end
 
 -------------------------------------------------------------------------------
 function m_client.update( tank, dt )
 	t = t + dt
-	if t > UPDATE_INTERVAL then
-		local datagram = serpent.dump( { entity = entity, x = m_tank.getX( tank ), y = m_tank.getY( tank ), timestamp = os:clock() } )
-    	host:broadcast( datagram )
+	if connected and t > UPDATE_INTERVAL then
+		local datagram = serpent.dump( { type = "tank", tank = localhost_tank } )
+    	server:send( datagram )
     	--print( datagram )
     	t = t - UPDATE_INTERVAL
 	end
@@ -36,30 +39,33 @@ function m_client.update( tank, dt )
 		event = host:service(0)
 		if event then
 			if event.type == "connect" then
-				print( "Connected to", event.peer )
+				print( "Connected to", event.peer, os.time() )
 			elseif event.type == "receive" then
 				-- print( "Got message: ", event.data, event.peer )
-				local ok, res = serpent.load( event.data )
+				local ok, msg = serpent.load( event.data )
 				if ok then
-					print( os:clock() - res.timestamp, res.timestamp  )
-					m_tank.setXY( tank, res.x, res.y )
+					if msg.type == "tank" then 
+						if msg.index ~= index_on_server then
+							g_tanks[ msg.index ] = msg.tank
+						end
+					elseif msg.type == "index" then
+						index_on_server = msg.index
+						connected = true
+						g_tanks[ index_on_server ] = localhost_tank
+						print( "index_on_server", index_on_server )
+					else
+						print( "unknown msg.type: ", msg.type, event.data )
+					end
 				end
 			elseif event.type == "disconnect" then
 				print( "disconnect" )
+				connected = false
 				-- TODO: handle disconnect gracefully
 			else 
-				print( "unknown event.type: ", event.type )
+				print( "unknown event.type: ", event.type, event.data )
 			end
 		end
 	until not event
-end
-
--------------------------------------------------------------------------------
-function m_client.draw()
-    -- pretty simple, we
-    for k, v in pairs(world) do
-        love.graphics.print(k, v.x, v.y)
-    end
 end
 
 -------------------------------------------------------------------------------
