@@ -7,6 +7,7 @@
 -------------------------------------------------------------------------------
 require "enet"
 serpent = require "serpent"
+m_tank = require "tank"
 
 local host_address = "localhost:12345"
 local host = enet.host_create( host_address )
@@ -17,6 +18,7 @@ local UPDATE_INTERVAL = 0.1 -- sec
 local function on_connect( event ) 
     print( "connect", event.peer:index(), os.time() )
     local gram = serpent.dump( { type = "index", index = event.peer:index() } ) 
+    tanks[ event.peer:index() ] = m_tank.new()
     event.peer:send( gram )
 end
 
@@ -31,12 +33,14 @@ end
 -------------------------------------------------------------------------------
 local function on_receive( event )
     t = os.time()
-    ok, gram = serpent.load( event.data )
+    ok, msg = serpent.load( event.data )
     if ok then
-        if gram.type == "tank" then
-            tanks[ event.peer:index() ] = gram.tank
+        if msg.type == "tank_command" then
+            print(serpent.line(msg.tank_command))
+            local tank = tanks[ event.peer:index() ]
+            m_tank.update( tank, msg.tank_command )
         else
-            print( "unknown gram.type", gram.type, event.data )
+            print( "unknown msg.type", msg.type, event.data )
         end
     end
 end
@@ -45,7 +49,6 @@ end
 local function on_update()
     --print( "update", serpent.dump(tanks) )
     for index, tank in pairs( tanks ) do 
-        print( "update", index )
         local gram = serpent.dump( { type = "tank", index = index, tank = tank } )
         host:broadcast( gram ) 
     end

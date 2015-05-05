@@ -39,8 +39,10 @@ end
 
 -------------------------------------------------------------------------------
 function love.update( dt )
-	m_tank.update( localhost_tank, tank_command, dt )
-	m_client.update( localhost_tank, dt )
+	local mouse_angle = math.atan2( love.mouse.getY() - SCREEN_HEIGHT_HALF, love.mouse.getX() - SCREEN_WIDTH_HALF )
+	m_tank_command.setMouseAngle( tank_command, mouse_angle )
+	m_tank.update( localhost_tank, tank_command )
+	m_client.update( localhost_tank, tank_command )
 end
 
 -------------------------------------------------------------------------------

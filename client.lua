@@ -3,16 +3,16 @@ local m_client = {}
 
 require "serpent"
 require "enet"
+m_tank_command = require "tank_command"
+m_utils = require "utils"
 
 local host = nil
 local server = nil
 
-local UPDATE_INTERVAL = 0.1 -- how long to wait, in seconds, before requesting an update
-
-local t
 local udp
 local connected = false
 local index_on_server = 0
+local previous_tank_command = m_tank_command.new()
 
 -------------------------------------------------------------------------------
 function m_client.is_connected()
@@ -23,17 +23,14 @@ end
 function m_client.init( g_tanks )
 	host = enet.host_create()
 	server = host:connect("localhost:12345")
-    t = 0
 end
 
 -------------------------------------------------------------------------------
-function m_client.update( tank, dt )
-	t = t + dt
-	if connected and t > UPDATE_INTERVAL then
-		local datagram = serpent.dump( { type = "tank", tank = localhost_tank } )
+function m_client.update( tank, tank_command )
+	if connected and m_tank_command.neq( tank_command, previous_tank_command ) then
+		previous_tank_command = m_utils.deepcopy( tank_command )
+		local datagram = serpent.dump( { type = "tank_command", tank_command = tank_command, timestamp = os.time() } )
     	server:send( datagram )
-    	--print( datagram )
-    	t = t - UPDATE_INTERVAL
 	end
 	repeat
 		event = host:service(0)
@@ -45,9 +42,7 @@ function m_client.update( tank, dt )
 				local ok, msg = serpent.load( event.data )
 				if ok then
 					if msg.type == "tank" then 
-						--if msg.index ~= index_on_server then
-							g_tanks[ msg.index ] = msg.tank
-						--end
+						g_tanks[ msg.index ] = msg.tank
 					elseif msg.type == "index" then
 						index_on_server = msg.index
 						connected = true

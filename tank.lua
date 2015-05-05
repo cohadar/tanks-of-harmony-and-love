@@ -1,6 +1,8 @@
 --- @module tank
 local m_tank = {}
 
+local m_terrain = require "terrain"
+
 -- drawing properties 
 TURRET_CENTER_X = 21.0
 TURRET_CENTER_Y = 28.0
@@ -36,7 +38,7 @@ function m_tank.setXY( self, x, y )
 end
 
 -------------------------------------------------------------------------------
-function m_tank.update( self, tank_command, dt )
+function m_tank.update( self, tank_command )
 	self.x = m_terrain.safe_x( self.x + tank_command.velocity * math.cos( self.angle ) )
 	self.y = m_terrain.safe_y( self.y + tank_command.velocity * math.sin( self.angle ) )
 	g_camera_x = self.x
@@ -44,7 +46,7 @@ function m_tank.update( self, tank_command, dt )
 	self.angle = self.angle + tank_command.angle_velocity
 
 	
-	local mouse_angle = math.atan2( love.mouse.getY() - SCREEN_HEIGHT_HALF, love.mouse.getX() - SCREEN_WIDTH_HALF )
+	local mouse_angle = tank_command.mouse_angle
 	self.turret_angle = math.atan2( math.sin( self.turret_angle ), math.cos( self.turret_angle ) )
 	
 	if math.abs(mouse_angle - self.turret_angle) < 0.1 then
