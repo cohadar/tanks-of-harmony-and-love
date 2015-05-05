@@ -13,17 +13,17 @@ function m_text.print( ... )
 	for n = 1, select( '#', ... ) do
   		local e = select( n, ... )
   		str = str .. e .. " "
-  		last_floating = last_floating + 1
-  		if last_floating > 100 then
-  			last_floating = 1
-  		end
-  		if last_y > 88 then
-  			last_y = last_y + 12
-  		else
-  			last_y = 100
-  		end
-  		floating[ last_floating ] = { text = str, duration = 5.0 * FPS, y = last_y }
 	end
+	last_floating = last_floating + 1
+	if last_floating > 100 then
+		last_floating = 1
+	end
+	if last_y > 88 then
+		last_y = last_y + 12
+	else
+		last_y = 100
+	end
+	floating[ last_floating ] = { text = str, duration = 5.0 * FPS, y = last_y }	
 end
 
 -------------------------------------------------------------------------------

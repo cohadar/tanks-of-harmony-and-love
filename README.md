@@ -23,7 +23,8 @@ Currently in development. ETA: 11 days.
 ### day4 goal: two player networking
   * you can see enemy tanks!!! \o/ \o/ \o/
 
-### day5 goal: client-side prediction and lag conpensation
+### day5 goal: client-side prediction and lag compensation
   * prediction working, but not efficient
   * visualizing server desync
   * finally made decent prediction, netcode is a lot harder that I thought
+  * well I guess this one will take more than a day :)
