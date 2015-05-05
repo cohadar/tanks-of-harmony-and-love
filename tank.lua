@@ -16,8 +16,6 @@ function m_tank.new()
 	self.y = 256.0
 	self.angle = 0.0
 	self.turret_angle = 0.0
-	self.velocity = 0.0
-	self.angle_velocity = 0.0
 	return self
 end
 
@@ -38,61 +36,12 @@ function m_tank.setXY( self, x, y )
 end
 
 -------------------------------------------------------------------------------
-function m_tank.upPressed( self )
-	self.velocity = 4.0 
-end
-
--------------------------------------------------------------------------------
-function m_tank.downPressed( self )
-	self.velocity = -4.0
-end
-
--------------------------------------------------------------------------------
-function m_tank.leftPressed( self )
-	self.angle_velocity = -math.pi / 128
-end
-
--------------------------------------------------------------------------------
-function m_tank.rightPressed( self )
-	self.angle_velocity = math.pi / 128
-end
-
--------------------------------------------------------------------------------
-function m_tank.upReleased( self )
-	if self.velocity > 0 then
-		self.velocity = 0.0 
-	end
-end
-
--------------------------------------------------------------------------------
-function m_tank.downReleased( self )
-	if self.velocity < 0 then
-		self.velocity = 0.0
-	end
-end
-
--------------------------------------------------------------------------------
-function m_tank.leftReleased( self )
-	if self.angle_velocity < 0 then
-		self.angle_velocity = 0
-	end
-end
-
--------------------------------------------------------------------------------
-function m_tank.rightReleased( self )
-	if self.angle_velocity > 0 then
-		self.angle_velocity = 0
-	end
-end
-
-
--------------------------------------------------------------------------------
-function m_tank.update( self, dt )
-	self.x = m_terrain.safe_x( self.x + self.velocity * math.cos( self.angle ) )
-	self.y = m_terrain.safe_y( self.y + self.velocity * math.sin( self.angle ) )
+function m_tank.update( self, tank_command, dt )
+	self.x = m_terrain.safe_x( self.x + tank_command.velocity * math.cos( self.angle ) )
+	self.y = m_terrain.safe_y( self.y + tank_command.velocity * math.sin( self.angle ) )
 	g_camera_x = self.x
 	g_camera_y = self.y	
-	self.angle = self.angle + self.angle_velocity
+	self.angle = self.angle + tank_command.angle_velocity
 
 	
 	local mouse_angle = math.atan2( love.mouse.getY() - SCREEN_HEIGHT_HALF, love.mouse.getX() - SCREEN_WIDTH_HALF )

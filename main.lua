@@ -9,11 +9,13 @@ g_camera_y = 6 * 64
 
 m_terrain = require "terrain"
 m_tank = require "tank"
+m_tank_command = require "tank_command"
 m_client = require "client"
 serpent = require "serpent"
 
 g_tanks = {}
 localhost_tank = m_tank.new()
+local tank_command = m_tank_command.new()
 
 -------------------------------------------------------------------------------
 function love.load()
@@ -37,7 +39,7 @@ end
 
 -------------------------------------------------------------------------------
 function love.update( dt )
-	m_tank.update( localhost_tank, dt )
+	m_tank.update( localhost_tank, tank_command, dt )
 	m_client.update( localhost_tank, dt )
 end
 
@@ -48,26 +50,26 @@ function love.keypressed(key)
 		return
 	end
 	if key     == "up"    or key == "w" then
-		m_tank.upPressed( localhost_tank )
+		m_tank_command.upPressed( tank_command )
 	elseif key == "down"  or key == "s" then
-		m_tank.downPressed( localhost_tank )
+		m_tank_command.downPressed( tank_command )
 	elseif key == "left"  or key == "a" then
-		m_tank.leftPressed( localhost_tank )
+		m_tank_command.leftPressed( tank_command )
 	elseif key == "right" or key == "d" then
-		m_tank.rightPressed( localhost_tank )
+		m_tank_command.rightPressed( tank_command )
 	end
 end
 
 -------------------------------------------------------------------------------
 function love.keyreleased(key)
 	if key     == "up"    or key == "w" then
-		m_tank.upReleased( localhost_tank )
+		m_tank_command.upReleased( tank_command )
 	elseif key == "down"  or key == "s" then
-		m_tank.downReleased( localhost_tank )
+		m_tank_command.downReleased( tank_command )
 	elseif key == "left"  or key == "a" then
-		m_tank.leftReleased( localhost_tank )
+		m_tank_command.leftReleased( tank_command )
 	elseif key == "right" or key == "d" then
-		m_tank.rightReleased( localhost_tank )
+		m_tank_command.rightReleased( tank_command )
 	end
 end
 

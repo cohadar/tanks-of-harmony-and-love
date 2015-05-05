@@ -45,9 +45,9 @@ function m_client.update( tank, dt )
 				local ok, msg = serpent.load( event.data )
 				if ok then
 					if msg.type == "tank" then 
-						if msg.index ~= index_on_server then
+						--if msg.index ~= index_on_server then
 							g_tanks[ msg.index ] = msg.tank
-						end
+						--end
 					elseif msg.type == "index" then
 						index_on_server = msg.index
 						connected = true
