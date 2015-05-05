@@ -53,6 +53,9 @@ function m_client.update( tank, dt )
 						connected = true
 						g_tanks[ index_on_server ] = localhost_tank
 						print( "index_on_server", index_on_server )
+					elseif msg.type == "player_gone" then
+						g_tanks[ msg.index ] = nil
+						-- TODO: display disconnected tanks in gray for a short time
 					else
 						print( "unknown msg.type: ", msg.type, event.data )
 					end

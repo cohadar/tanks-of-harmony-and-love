@@ -24,6 +24,8 @@ end
 local function on_disconnect( event )
     print( "disconnect", event.peer:index() )
     tanks[ event.peer:index() ] = nil
+    local gram = serpent.dump( { type = "player_gone", index = event.peer:index() } )
+    host:broadcast( gram )
 end
 
 -------------------------------------------------------------------------------
