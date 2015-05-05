@@ -4,18 +4,19 @@ local m_world = {}
 m_tank = require "tank"
 m_utils = require "utils"
 
-local localhost_tank = m_tank.new()
 local tanks = {}
+tanks[ 0 ] = m_tank.new() -- tank on index zero is localhost tank
 
 -- TODO: make server use world?
 
+
 -------------------------------------------------------------------------------
-function m_world.getLocalTank()
-	return localhost_tank;
+function m_world.get_tank( index )
+	return m_utils.deepcopy( tanks[ index ] );
 end
 
 -------------------------------------------------------------------------------
-function m_world.getTankPairs()
+function m_world.tank_pairs()
 	return pairs( tanks )
 end
 
@@ -32,11 +33,10 @@ end
 -------------------------------------------------------------------------------
 function m_world.connect( index )
 	-- production
-	-- tanks[ index ] = localhost_tank 
+	--tanks[ index ] = tanks[ 0 ]
 	
 	-- testing
-	tanks[ index ] = m_utils.deepcopy( localhost_tank ) 
-	tanks[ 0 ] = localhost_tank
+	tanks[ index ] = m_utils.deepcopy( tanks[ 0 ] ) 
 end
 
 -------------------------------------------------------------------------------

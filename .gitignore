@@ -30,3 +30,7 @@
 
 # Debug files
 *.dSYM/
+
+# MacOSX files
+.DS_Store
+

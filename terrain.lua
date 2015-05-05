@@ -32,8 +32,8 @@ end
 -------------------------------------------------------------------------------
 function m_terrain.init()
 	--love.graphics.setBackgroundColor(0x00, 0x00, 0x00, 0xFF)
-	VISIBLE_SQUARES_X = math.floor(SCREEN_WIDTH / MAP_SQUARE) + 2
-	VISIBLE_SQUARES_Y = math.floor(SCREEN_HEIGHT / MAP_SQUARE) + 2
+	VISIBLE_SQUARES_X = MAP_WIDTH -- math.floor(SCREEN_WIDTH / MAP_SQUARE) + 2
+	VISIBLE_SQUARES_Y = MAP_HEIGHT --math.floor(SCREEN_HEIGHT / MAP_SQUARE) + 2
 end
 
 -------------------------------------------------------------------------------
@@ -49,8 +49,8 @@ end
 
 -------------------------------------------------------------------------------
 function m_terrain.draw()
-	for x = -10, VISIBLE_SQUARES_X - 1 do
-		for y = -10, VISIBLE_SQUARES_Y - 1 do
+	for x = -10, VISIBLE_SQUARES_X + 10 do
+		for y = -10, VISIBLE_SQUARES_Y + 10 do
 			local mx = x
 			local my = y
 			if out_of_map(mx, my) then

@@ -27,11 +27,30 @@ function m_client.init()
 end
 
 -------------------------------------------------------------------------------
+local function tank_sync( msg )
+	m_world.update_tank( msg.index, msg.tank )
+	local old_tank = m_history.get_tank( msg.client_tick )
+	if old_tank == nil then
+		--print("nil_resync", msg.client_tick)
+		m_world.update_tank( 0, msg.tank ) 
+		g_tick = msg.server_tick
+	else
+		-- TODO: insted of resetting, replay modified from history
+		if m_tank.neq( old_tank, msg.tank ) then
+			--print("forced_resync", msg.client_tick)
+			g_tick = msg.server_tick
+			m_world.update_tank( 0, msg.tank )
+		end
+	end
+end
+
+-------------------------------------------------------------------------------
 function m_client.update( tank, tank_command )
 	if connected then
-		local tick = m_history.tank_record( m_utils.deepcopy( tank ) )
-		local datagram = serpent.dump( { type = "tank_command", tank_command = tank_command } )
-    	server:send( datagram )
+		m_history.tank_record( g_tick, m_utils.deepcopy( tank ) )
+		--print("rec_tank", g_tick, serpent.line(tank))
+		local datagram = serpent.dump( { type = "tank_command", tank_command = tank_command, client_tick = g_tick } )
+    	server:send( datagram, 0, "unsequenced" )
 	end
 	repeat
 		event = host:service(0)
@@ -43,23 +62,10 @@ function m_client.update( tank, tank_command )
 				local ok, msg = serpent.load( event.data )
 				if ok then
 					if msg.type == "tank" then 
-						if index_on_server == msg.index then							
-							-- local old_tank = m_history.get_tank( msg.tick )
-							-- if old_tank == nil then
-							-- 	print("nil", msg.tick)
-							-- 	m_world.update_tank( msg.index, msg.tank ) 
-							-- else
-							-- 	if m_tank.neq( old_tank, msg.tank ) then
-							-- 		-- TODO: insted of resetting, replay modified from history
-							-- 		m_world.update_tank( msg.index, msg.tank )
-							-- 		print("server_force", msg.tick, old_tank.x, msg.tank.x)
-							-- 	end
-							-- 	m_history.clear_tank_record( msg.tick )
-							-- end
-							m_world.update_tank( msg.index, msg.tank )
+						if index_on_server == msg.index then
+							tank_sync( msg )
 						else
 							m_world.update_tank( msg.index, msg.tank )
-
 						end
 					elseif msg.type == "index" then
 						index_on_server = msg.index

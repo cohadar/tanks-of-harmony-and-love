@@ -13,6 +13,7 @@ m_terrain = require "terrain"
 m_tank = require "tank"
 m_tank_command = require "tank_command"
 m_client = require "client"
+m_tests = require "tests"
 serpent = require "serpent"
 
 m_world = require "world"
@@ -20,6 +21,8 @@ local tank_command = m_tank_command.new()
 local old_mouse_x = 0
 local old_mouse_y = 0
 local command_changed = false
+
+g_tick = 0
 
 -------------------------------------------------------------------------------
 function love.load()
@@ -39,10 +42,12 @@ function love.load()
 	g_tank_turret = love.graphics.newImage("turret.png")
 	m_terrain.init()
 	m_client.init()
+	m_tests.run_all()
 end
 
 -------------------------------------------------------------------------------
 function love.update( dt )
+	g_tick = g_tick + 1
 	local mouse_y = love.mouse.getY()
 	local mouse_x = love.mouse.getX()
 	if old_mouse_x ~= mouse_x or old_mouse_y ~= mouse_y then 
@@ -50,15 +55,12 @@ function love.update( dt )
 		m_tank_command.setMouseAngle( tank_command, mouse_angle )
 		old_mouse_x = mouse_x
 		old_mouse_y = mouse_y
-		command_changed = true
+		command_changed = true -- unused !
 	end
-	if command_changed then	
-		m_tank.update( m_world.getLocalTank(), tank_command, dt )
-		m_client.update( m_world.getLocalTank(), tank_command )
-	else
-		m_tank.update( m_world.getLocalTank(), tank_command, dt )
-		m_client.update( m_world.getLocalTank(), tank_command )
-	end
+	local tank = m_world.get_tank( 0 )
+	m_tank.update( tank, tank_command, dt )
+	m_world.update_tank( 0, tank )
+	m_client.update( tank, tank_command )
 end
 
 -------------------------------------------------------------------------------
@@ -106,7 +108,7 @@ function love.draw()
 	m_terrain.draw()
 	love.graphics.setColor(0xFF, 0xFF, 0xFF, 0xFF)
 	if m_client.is_connected() then
-		for key, tank in m_world.getTankPairs() do 
+		for key, tank in m_world.tank_pairs() do 
 			if key == 0 then
 				love.graphics.setColor(0xFF, 0xFF, 0x00, 0xFF)
 			else
@@ -115,7 +117,7 @@ function love.draw()
 			m_tank.draw( tank )
 		end
 	else
-		m_tank.draw( m_world.getLocalTank() )
+		m_tank.draw( m_world.get_tank( 0 ) )
 	end
 	love.graphics.pop()
 	command_changed = false

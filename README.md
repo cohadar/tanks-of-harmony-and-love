@@ -26,3 +26,4 @@ Currently in development. ETA: 11 days.
 ### day5 goal: client-side prediction and lag conpensation
   * prediction working, but not efficient
   * visualizing server desync
+  * finally made decent prediction, netcode is a lot harder that I thought

@@ -12,6 +12,7 @@ m_tank = require "tank"
 local host_address = "localhost:12345"
 local tanks = {}
 local tank_commands = {}
+local client_ticks = {}
 local FPS = 1 / 60
 
 -------------------------------------------------------------------------------
@@ -19,7 +20,7 @@ local function on_connect( event )
     print( "connect", event.peer:index(), os.time() )
     local gram = serpent.dump( { type = "index", index = event.peer:index() } ) 
     tanks[ event.peer:index() ] = m_tank.new()
-    event.peer:send( gram )
+    event.peer:send( gram, 0,  "unsequenced" )
 end
 
 -------------------------------------------------------------------------------
@@ -37,6 +38,7 @@ local function on_receive( event )
     if ok then
         if msg.type == "tank_command" then
             tank_commands[ event.peer:index() ] = msg.tank_command
+            client_ticks[ event.peer:index() ] = msg.client_tick
         else
             print( "unknown msg.type", msg.type, event.data )
         end
@@ -44,16 +46,24 @@ local function on_receive( event )
 end
 
 -------------------------------------------------------------------------------
-local function on_update( host, tick )
+local function on_update( host, server_tick )
     --print( "update", serpent.dump(tanks) )
     for index, tank in pairs( tanks ) do 
         if tank_commands[ index ] ~= nil then
             m_tank.update( tank, tank_commands[ index ] )
+            tank_commands[ index ] = nil
         end        
     end    
     for index, tank in pairs( tanks ) do 
-        local gram = serpent.dump( { type = "tank", index = index, tank = tank, tick = tick } )
-        host:broadcast( gram ) 
+        local client_tick = client_ticks[ index ] 
+        if client_tick == nil then
+            client_tick = server_tick
+            client_ticks[ index ] = server_tick 
+        else
+            client_ticks[ index ] = client_ticks[ index ] + 1    
+        end
+        local gram = serpent.dump( { type = "tank", index = index, tank = tank, server_tick = server_tick, client_tick = client_tick } )
+        host:broadcast( gram, 0, "unsequenced" ) 
     end
 end
 
