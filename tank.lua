@@ -34,16 +34,15 @@ function m_tank.neq( a, b )
 	if math.abs(a.x - b.x) > EPSILON then
 		return true
 	end
-	-- if math.abs(a.y - b.y) > EPSILON then
-	-- 	return true
-	-- end
-	-- if math.abs(a.angle - b.angle) > EPSILON then
-	-- 	return true
-	-- end
-	-- WARNING: disabled for testing only
-	-- if math.abs(a.turret_angle - b.turret_angle) > EPSILON then
-	-- 	return true
-	-- end
+	if math.abs(a.y - b.y) > EPSILON then
+		return true
+	end
+	if math.abs(a.angle - b.angle) > EPSILON then
+		return true
+	end
+	if math.abs(a.turret_angle - b.turret_angle) > EPSILON then
+		return true
+	end
 	return false
 end
 

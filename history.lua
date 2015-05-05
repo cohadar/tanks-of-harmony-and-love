@@ -6,7 +6,6 @@ m_utils = require "utils"
 
 -- TODO: replace with circular buffer
 local history = {}
-local tick = 0
 
 -------------------------------------------------------------------------------
 function m_history.tank_record( tick, tank )
@@ -21,6 +20,11 @@ end
 -------------------------------------------------------------------------------
 function m_history.clear_tank_record( tick )
 	history[ tick ] = nil
+end
+
+-------------------------------------------------------------------------------
+function m_history.reset()
+	history = {}
 end
 
 -------------------------------------------------------------------------------

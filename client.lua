@@ -31,15 +31,16 @@ local function tank_sync( msg )
 	m_world.update_tank( msg.index, msg.tank )
 	local old_tank = m_history.get_tank( msg.client_tick )
 	if old_tank == nil then
-		--print("nil_resync", msg.client_tick)
+		print("nil_resync", msg.client_tick)
 		m_world.update_tank( 0, msg.tank ) 
 		g_tick = msg.server_tick
-	else
-		-- TODO: insted of resetting, replay modified from history
+	else		
 		if m_tank.neq( old_tank, msg.tank ) then
-			--print("forced_resync", msg.client_tick)
+			print("forced_resync", msg.client_tick)
 			g_tick = msg.server_tick
 			m_world.update_tank( 0, msg.tank )
+			-- TODO: insted of resetting, replay modified from history
+			m_history.reset()
 		end
 	end
 end
