@@ -121,6 +121,7 @@ function love.draw()
 	end
 	love.graphics.pop()
 	command_changed = false
+	m_text.draw()
 end
 
 -------------------------------------------------------------------------------

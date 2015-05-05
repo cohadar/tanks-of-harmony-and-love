@@ -2,6 +2,7 @@
 local m_tank = {}
 
 local m_terrain = require "terrain"
+local m_utils = require "utils"
 
 -- drawing properties 
 TURRET_CENTER_X = 21.0
@@ -64,11 +65,11 @@ end
 
 -------------------------------------------------------------------------------
 function m_tank.update( self, tank_command)
-	self.x = m_terrain.safe_x( self.x + tank_command.velocity * math.cos( self.angle ) )
-	self.y = m_terrain.safe_y( self.y + tank_command.velocity * math.sin( self.angle ) )
+	self.x = math.floor( m_terrain.safe_x( self.x + tank_command.velocity * math.cos( self.angle ) ) )
+	self.y = math.floor( m_terrain.safe_y( self.y + tank_command.velocity * math.sin( self.angle ) ) )
 	g_camera_x = self.x
 	g_camera_y = self.y	
-	self.angle = self.angle + tank_command.angle_velocity
+	self.angle = m_utils.round_angle( self.angle + tank_command.angle_velocity )
 
 	
 	local mouse_angle = tank_command.mouse_angle
@@ -87,6 +88,7 @@ function m_tank.update( self, tank_command)
 			self.turret_angle = self.turret_angle - TURRET_ANGLE_VELOCITY
 		end	
 	end
+	--self.turret_angle = m_utils.round_angle( self.turret_angle )
 end
 
 -------------------------------------------------------------------------------
