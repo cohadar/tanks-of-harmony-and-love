@@ -24,3 +24,4 @@ Currently in development. ETA: 11 days.
   * you can see enemy tanks!!! \o/ \o/ \o/
 
 ### day5 goal: client-side prediction and lag conpensation
+  * prediction working, but not efficient

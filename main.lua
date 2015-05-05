@@ -1,5 +1,7 @@
 io.stdout:setvbuf("no")
 
+EPSILON = 0.000001
+
 SCREEN_WIDTH  = 0
 SCREEN_HEIGHT = 0
 
@@ -13,8 +15,7 @@ m_tank_command = require "tank_command"
 m_client = require "client"
 serpent = require "serpent"
 
-g_tanks = {}
-localhost_tank = m_tank.new()
+m_world = require "world"
 local tank_command = m_tank_command.new()
 
 -------------------------------------------------------------------------------
@@ -39,10 +40,11 @@ end
 
 -------------------------------------------------------------------------------
 function love.update( dt )
+	-- TODO: update with command only if something changed
 	local mouse_angle = math.atan2( love.mouse.getY() - SCREEN_HEIGHT_HALF, love.mouse.getX() - SCREEN_WIDTH_HALF )
 	m_tank_command.setMouseAngle( tank_command, mouse_angle )
-	m_tank.update( localhost_tank, tank_command )
-	m_client.update( localhost_tank, tank_command )
+	m_tank.update( m_world.getLocalTank(), tank_command )
+	m_client.update( m_world.getLocalTank(), tank_command )
 end
 
 -------------------------------------------------------------------------------
@@ -82,11 +84,11 @@ function love.draw()
 	m_terrain.draw()
 	love.graphics.setColor(0xFF, 0xFF, 0xFF, 0xFF)
 	if m_client.is_connected() then
-		for key, tank in pairs( g_tanks ) do 
+		for key, tank in m_world.getTankPairs() do 
 			m_tank.draw( tank )
 		end
 	else
-		m_tank.draw( localhost_tank )
+		m_tank.draw( m_world.getLocalTank() )
 	end
 	love.graphics.pop()
 end

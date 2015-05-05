@@ -5,6 +5,8 @@ require "serpent"
 require "enet"
 m_tank_command = require "tank_command"
 m_utils = require "utils"
+m_world = require "world"
+m_history = require "history"
 
 local host = nil
 local server = nil
@@ -12,7 +14,6 @@ local server = nil
 local udp
 local connected = false
 local index_on_server = 0
-local previous_tank_command = m_tank_command.new()
 
 -------------------------------------------------------------------------------
 function m_client.is_connected()
@@ -20,16 +21,16 @@ function m_client.is_connected()
 end
 
 -------------------------------------------------------------------------------
-function m_client.init( g_tanks )
+function m_client.init()
 	host = enet.host_create()
 	server = host:connect("localhost:12345")
 end
 
 -------------------------------------------------------------------------------
 function m_client.update( tank, tank_command )
-	if connected and m_tank_command.neq( tank_command, previous_tank_command ) then
-		previous_tank_command = m_utils.deepcopy( tank_command )
-		local datagram = serpent.dump( { type = "tank_command", tank_command = tank_command, timestamp = os.time() } )
+	if connected then
+		local tick = m_history.tank_record( m_utils.deepcopy( tank ) )
+		local datagram = serpent.dump( { type = "tank_command", tank_command = tank_command, tick = tick } )
     	server:send( datagram )
 	end
 	repeat
@@ -42,14 +43,29 @@ function m_client.update( tank, tank_command )
 				local ok, msg = serpent.load( event.data )
 				if ok then
 					if msg.type == "tank" then 
-						g_tanks[ msg.index ] = msg.tank
+						if index_on_server == msg.index then							
+							local old_tank = m_history.get_tank( msg.tick )
+							if old_tank == nil then
+								print("nil", msg.tick)
+								m_world.update_tank( msg.index, msg.tank ) 
+							else
+								if m_tank.neq( old_tank, msg.tank ) then
+									-- TODO: insted of resetting, replay modified from history
+									m_world.update_tank( msg.index, msg.tank )
+									print("server_force", msg.tick, old_tank.x, msg.tank.x)
+								end
+								m_history.clear_tank_record( msg.tick )
+							end
+						else
+							m_world.update_tank( msg.index, msg.tank )
+						end
 					elseif msg.type == "index" then
 						index_on_server = msg.index
 						connected = true
-						g_tanks[ index_on_server ] = localhost_tank
+						m_world.connect( index_on_server )
 						print( "index_on_server", index_on_server )
 					elseif msg.type == "player_gone" then
-						g_tanks[ msg.index ] = nil
+						m_world.player_gone( msg.index )
 						-- TODO: display disconnected tanks in gray for a short time
 					else
 						print( "unknown msg.type: ", msg.type, event.data )

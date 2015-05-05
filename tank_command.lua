@@ -15,13 +15,13 @@ function m_tank_command.neq( a, b )
 	if b == nil then
 		return true
 	end
-	if a.mouse_angle ~= b.mouse_angle then
+	if math.abs(a.mouse_angle - b.mouse_angle) > EPSILON then
 		return true
 	end
-	if a.velocity ~= b.velocity then
+	if math.abs(a.velocity - b.velocity) > EPSILON then
 		return true
 	end
-	if a.angle_velocity ~= b.angle_velocity then
+	if math.abs(a.angle_velocity - b.angle_velocity) > EPSILON then
 		return true
 	end
 	return false
