@@ -10,11 +10,9 @@ serpent = require "serpent"
 m_tank = require "tank"
 
 local host_address = "localhost:12345"
-local host = enet.host_create( host_address )
 local tanks = {}
-local ticks = {}
-local sent_ticks = {}
-local UPDATE_INTERVAL = 0.1 -- sec
+local tank_commands = {}
+local FPS = 1 / 60
 
 -------------------------------------------------------------------------------
 local function on_connect( event ) 
@@ -25,7 +23,7 @@ local function on_connect( event )
 end
 
 -------------------------------------------------------------------------------
-local function on_disconnect( event )
+local function on_disconnect( host, event )
     print( "disconnect", event.peer:index() )
     tanks[ event.peer:index() ] = nil
     local gram = serpent.dump( { type = "player_gone", index = event.peer:index() } )
@@ -38,10 +36,7 @@ local function on_receive( event )
     ok, msg = serpent.load( event.data )
     if ok then
         if msg.type == "tank_command" then
-            print(serpent.line(msg.tank_command))
-            local tank = tanks[ event.peer:index() ]
-            m_tank.update( tank, msg.tank_command )
-            ticks[ event.peer:index() ] = msg.tick
+            tank_commands[ event.peer:index() ] = msg.tank_command
         else
             print( "unknown msg.type", msg.type, event.data )
         end
@@ -49,41 +44,51 @@ local function on_receive( event )
 end
 
 -------------------------------------------------------------------------------
-local function on_update()
+local function on_update( host, tick )
     --print( "update", serpent.dump(tanks) )
     for index, tank in pairs( tanks ) do 
-        if ticks[ index ] ~= sent_ticks[ index ] then
-            local gram = serpent.dump( { type = "tank", index = index, tank = tank, tick = ticks[ index ] } )
-            host:broadcast( gram ) 
-            sent_ticks[ index ] = ticks[ index ]
+        if tank_commands[ index ] ~= nil then
+            m_tank.update( tank, tank_commands[ index ] )
+        end        
+    end    
+    for index, tank in pairs( tanks ) do 
+        local gram = serpent.dump( { type = "tank", index = index, tank = tank, tick = tick } )
+        host:broadcast( gram ) 
+    end
+end
+
+-------------------------------------------------------------------------------
+function server_main()
+    print( "starting server", host_address )
+    local host = enet.host_create( host_address )
+    local tick = 0
+    local t = os.clock()
+    while true do
+        local event = host:service( 0 )
+        if event then
+            if event.type == "receive" then
+                on_receive( event )
+            elseif event.type == "connect" then
+                on_connect( event )
+            elseif event.type == "disconnect" then
+                on_disconnect( host, event )
+            else
+                print( "unknown event.type", event.type )
+            end
+        end
+        local temp = os.clock()
+        if t + FPS < temp then
+            t = temp
+            tick = tick + 1
+            on_update( host, tick )
         end
     end
 end
 
 -------------------------------------------------------------------------------
-print( "starting server", host_address )
-local t = os.time()
-local last_update_time = t
-while true do
-    local event = host:service( 100 )
-    if event then
-        if event.type == "receive" then
-            on_receive( event )
-        elseif event.type == "connect" then
-            on_connect( event )
-        elseif event.type == "disconnect" then
-            on_disconnect( event )
-        else
-            print( "unknown event.type", event.type )
-        end
-    end
-    on_update()
-    -- t = os.time()
-    -- if last_update_time + UPDATE_INTERVAL > t then
-    --     last_update_time = t
-    --     on_update()
-    -- end
-end
+server_main()
+
+
 
 
 

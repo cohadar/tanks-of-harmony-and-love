@@ -17,6 +17,9 @@ serpent = require "serpent"
 
 m_world = require "world"
 local tank_command = m_tank_command.new()
+local old_mouse_x = 0
+local old_mouse_y = 0
+local command_changed = false
 
 -------------------------------------------------------------------------------
 function love.load()
@@ -40,11 +43,22 @@ end
 
 -------------------------------------------------------------------------------
 function love.update( dt )
-	-- TODO: update with command only if something changed
-	local mouse_angle = math.atan2( love.mouse.getY() - SCREEN_HEIGHT_HALF, love.mouse.getX() - SCREEN_WIDTH_HALF )
-	m_tank_command.setMouseAngle( tank_command, mouse_angle )
-	m_tank.update( m_world.getLocalTank(), tank_command )
-	m_client.update( m_world.getLocalTank(), tank_command )
+	local mouse_y = love.mouse.getY()
+	local mouse_x = love.mouse.getX()
+	if old_mouse_x ~= mouse_x or old_mouse_y ~= mouse_y then 
+		local mouse_angle = math.atan2( mouse_y - SCREEN_HEIGHT_HALF, mouse_x - SCREEN_WIDTH_HALF )
+		m_tank_command.setMouseAngle( tank_command, mouse_angle )
+		old_mouse_x = mouse_x
+		old_mouse_y = mouse_y
+		command_changed = true
+	end
+	if command_changed then	
+		m_tank.update( m_world.getLocalTank(), tank_command, dt )
+		m_client.update( m_world.getLocalTank(), tank_command )
+	else
+		m_tank.update( m_world.getLocalTank(), tank_command, dt )
+		m_client.update( m_world.getLocalTank(), tank_command )
+	end
 end
 
 -------------------------------------------------------------------------------
@@ -55,12 +69,16 @@ function love.keypressed(key)
 	end
 	if key     == "up"    or key == "w" then
 		m_tank_command.upPressed( tank_command )
+		command_changed = true
 	elseif key == "down"  or key == "s" then
 		m_tank_command.downPressed( tank_command )
+		command_changed = true
 	elseif key == "left"  or key == "a" then
 		m_tank_command.leftPressed( tank_command )
+		command_changed = true
 	elseif key == "right" or key == "d" then
 		m_tank_command.rightPressed( tank_command )
+		command_changed = true
 	end
 end
 
@@ -68,12 +86,16 @@ end
 function love.keyreleased(key)
 	if key     == "up"    or key == "w" then
 		m_tank_command.upReleased( tank_command )
+		command_changed = true
 	elseif key == "down"  or key == "s" then
 		m_tank_command.downReleased( tank_command )
+		command_changed = true
 	elseif key == "left"  or key == "a" then
 		m_tank_command.leftReleased( tank_command )
+		command_changed = true
 	elseif key == "right" or key == "d" then
 		m_tank_command.rightReleased( tank_command )
+		command_changed = true
 	end
 end
 
@@ -85,12 +107,18 @@ function love.draw()
 	love.graphics.setColor(0xFF, 0xFF, 0xFF, 0xFF)
 	if m_client.is_connected() then
 		for key, tank in m_world.getTankPairs() do 
+			if key == 0 then
+				love.graphics.setColor(0xFF, 0xFF, 0x00, 0xFF)
+			else
+				love.graphics.setColor(0xFF, 0xFF, 0xFF, 0xFF)
+			end
 			m_tank.draw( tank )
 		end
 	else
 		m_tank.draw( m_world.getLocalTank() )
 	end
 	love.graphics.pop()
+	command_changed = false
 end
 
 -------------------------------------------------------------------------------

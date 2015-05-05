@@ -2,6 +2,7 @@
 local m_world = {}
 
 m_tank = require "tank"
+m_utils = require "utils"
 
 local localhost_tank = m_tank.new()
 local tanks = {}
@@ -30,7 +31,12 @@ end
 
 -------------------------------------------------------------------------------
 function m_world.connect( index )
-	tanks[ index ] = localhost_tank
+	-- production
+	-- tanks[ index ] = localhost_tank 
+	
+	-- testing
+	tanks[ index ] = m_utils.deepcopy( localhost_tank ) 
+	tanks[ 0 ] = localhost_tank
 end
 
 -------------------------------------------------------------------------------

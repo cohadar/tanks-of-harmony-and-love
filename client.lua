@@ -30,7 +30,7 @@ end
 function m_client.update( tank, tank_command )
 	if connected then
 		local tick = m_history.tank_record( m_utils.deepcopy( tank ) )
-		local datagram = serpent.dump( { type = "tank_command", tank_command = tank_command, tick = tick } )
+		local datagram = serpent.dump( { type = "tank_command", tank_command = tank_command } )
     	server:send( datagram )
 	end
 	repeat
@@ -44,20 +44,22 @@ function m_client.update( tank, tank_command )
 				if ok then
 					if msg.type == "tank" then 
 						if index_on_server == msg.index then							
-							local old_tank = m_history.get_tank( msg.tick )
-							if old_tank == nil then
-								print("nil", msg.tick)
-								m_world.update_tank( msg.index, msg.tank ) 
-							else
-								if m_tank.neq( old_tank, msg.tank ) then
-									-- TODO: insted of resetting, replay modified from history
-									m_world.update_tank( msg.index, msg.tank )
-									print("server_force", msg.tick, old_tank.x, msg.tank.x)
-								end
-								m_history.clear_tank_record( msg.tick )
-							end
+							-- local old_tank = m_history.get_tank( msg.tick )
+							-- if old_tank == nil then
+							-- 	print("nil", msg.tick)
+							-- 	m_world.update_tank( msg.index, msg.tank ) 
+							-- else
+							-- 	if m_tank.neq( old_tank, msg.tank ) then
+							-- 		-- TODO: insted of resetting, replay modified from history
+							-- 		m_world.update_tank( msg.index, msg.tank )
+							-- 		print("server_force", msg.tick, old_tank.x, msg.tank.x)
+							-- 	end
+							-- 	m_history.clear_tank_record( msg.tick )
+							-- end
+							m_world.update_tank( msg.index, msg.tank )
 						else
 							m_world.update_tank( msg.index, msg.tank )
+
 						end
 					elseif msg.type == "index" then
 						index_on_server = msg.index

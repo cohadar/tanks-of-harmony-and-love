@@ -63,7 +63,7 @@ function m_tank.setXY( self, x, y )
 end
 
 -------------------------------------------------------------------------------
-function m_tank.update( self, tank_command )
+function m_tank.update( self, tank_command)
 	self.x = m_terrain.safe_x( self.x + tank_command.velocity * math.cos( self.angle ) )
 	self.y = m_terrain.safe_y( self.y + tank_command.velocity * math.sin( self.angle ) )
 	g_camera_x = self.x
