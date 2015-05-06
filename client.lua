@@ -30,7 +30,9 @@ end
 
 -------------------------------------------------------------------------------
 local function tank_sync( msg )
-	--m_world.update_tank( msg.index, msg.tank )
+	if NETCODE_DEBUG then
+		m_world.update_tank( msg.index, msg.tank )
+	end
 	local old_tank = m_history.get_tank( msg.client_tick )
 	if old_tank == nil then
 		m_text.print("nil_sync", msg.client_tick, msg.server_tick)
@@ -78,6 +80,7 @@ function m_client.update( tank, tank_command )
 						end
 					elseif msg.type == "index" then
 						index_on_server = msg.index
+						love.window.setTitle( "Connected as Player #" .. index_on_server )
 						connected = true
 						m_world.connect( index_on_server )
 						print( "index_on_server", index_on_server )
@@ -90,6 +93,7 @@ function m_client.update( tank, tank_command )
 				end
 			elseif event.type == "disconnect" then
 				print( "disconnect" )
+				love.window.setTitle( "Not Connected" )
 				connected = false
 				-- TODO: handle disconnect gracefully
 			else 

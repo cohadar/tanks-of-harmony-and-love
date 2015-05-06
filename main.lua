@@ -1,13 +1,19 @@
 io.stdout:setvbuf("no")
 
+if GAME_DEBUG then
+	SCALE_GRAPHICS = 0.5
+else
+	SCALE_GRAPHICS = 1.00
+end
+
 EPSILON = 0.000001
 
 SCREEN_WIDTH  = 0
 SCREEN_HEIGHT = 0
 
 -- camera uses terrain coordinate system
-g_camera_x = 8 * 64
-g_camera_y = 6 * 64
+g_camera_x = 0
+g_camera_y = 0
 
 m_terrain = require "terrain"
 m_tank = require "tank"
@@ -28,13 +34,14 @@ g_tick = 0
 function love.load()
 -- client.lua
 
-	SCREEN_WIDTH  = love.graphics.getWidth()
-	SCREEN_HEIGHT = love.graphics.getHeight()
+	SCREEN_WIDTH  = love.graphics.getWidth() * SCALE_GRAPHICS
+	SCREEN_HEIGHT = love.graphics.getHeight() * SCALE_GRAPHICS
 	SCREEN_WIDTH_HALF  = math.floor( SCREEN_WIDTH / 2 )
 	SCREEN_HEIGHT_HALF = math.floor( SCREEN_HEIGHT / 2 )
 
-	--g_camera_x = -math.floor( SCREEN_WIDTH / 2 )
-	--g_camera_y = -math.floor( SCREEN_HEIGHT / 2 )
+	if GAME_DEBUG then
+		love.window.setMode( SCREEN_WIDTH, SCREEN_HEIGHT, {vsync = true, resizable = false} )
+	end
 
 	love.mouse.setVisible( true )
 
@@ -43,6 +50,7 @@ function love.load()
 	m_terrain.init()
 	m_client.init()
 	m_tests.run_all()
+	love.window.setTitle( "Not Connected" )
 end
 
 -------------------------------------------------------------------------------
@@ -105,8 +113,9 @@ end
 
 -------------------------------------------------------------------------------
 function love.draw()
+	love.graphics.scale( SCALE_GRAPHICS )
 	love.graphics.push()
-	love.graphics.translate(SCREEN_WIDTH_HALF - g_camera_x, SCREEN_HEIGHT_HALF - g_camera_y)	
+	love.graphics.translate(SCREEN_WIDTH_HALF / SCALE_GRAPHICS - g_camera_x, SCREEN_HEIGHT_HALF / SCALE_GRAPHICS - g_camera_y)	
 	m_terrain.draw()
 	love.graphics.setColor(0xFF, 0xFF, 0xFF, 0xFF)
 	if m_client.is_connected() then

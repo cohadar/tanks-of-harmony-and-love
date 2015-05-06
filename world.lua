@@ -32,11 +32,9 @@ end
 
 -------------------------------------------------------------------------------
 function m_world.connect( index )
-	-- production
-	--tanks[ index ] = tanks[ 0 ]
-	
-	-- testing
-	--tanks[ index ] = m_utils.deepcopy( tanks[ 0 ] ) 
+	if NETCODE_DEBUG then
+		tanks[ index ] = m_utils.deepcopy( tanks[ 0 ] ) 
+	end
 end
 
 -------------------------------------------------------------------------------
