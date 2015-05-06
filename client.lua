@@ -3,6 +3,7 @@ local m_client = {}
 
 require "serpent"
 require "enet"
+m_tank = require "tank"
 m_tank_command = require "tank_command"
 m_utils = require "utils"
 m_world = require "world"
@@ -32,16 +33,22 @@ local function tank_sync( msg )
 	m_world.update_tank( msg.index, msg.tank )
 	local old_tank = m_history.get_tank( msg.client_tick )
 	if old_tank == nil then
-		m_text.print("nil_resync", msg.client_tick)
-		m_world.update_tank( 0, msg.tank ) 
-		g_tick = msg.server_tick
+		m_text.print("nil_sync", msg.client_tick, msg.server_tick)
+		-- TODO: insted of resetting, replay modified from history
+		m_history.reset()
+		g_tick = msg.server_tick + 1
+		m_world.update_tank( 0, msg.tank )
+		m_history.tank_record( msg.client_tick, msg.tank )
+		m_history.tank_record( g_tick, msg.tank )
 	else		
 		if m_tank.neq( old_tank, msg.tank ) then
-			m_text.print("forced_resync", msg.client_tick)
-			g_tick = msg.server_tick
-			m_world.update_tank( 0, msg.tank )
+			m_text.print("forced_sync", msg.client_tick, msg.server_tick)
 			-- TODO: insted of resetting, replay modified from history
 			m_history.reset()
+			g_tick = msg.server_tick + 1
+			m_world.update_tank( 0, msg.tank )
+			m_history.tank_record( msg.client_tick, msg.tank )
+			m_history.tank_record( g_tick, msg.tank )
 		end
 	end
 end
@@ -49,7 +56,7 @@ end
 -------------------------------------------------------------------------------
 function m_client.update( tank, tank_command )
 	if connected then
-		m_history.tank_record( g_tick, m_utils.deepcopy( tank ) )
+		m_history.tank_record( g_tick, tank )
 		--print("rec_tank", g_tick, serpent.line(tank))
 		local datagram = serpent.dump( { type = "tank_command", tank_command = tank_command, client_tick = g_tick } )
     	server:send( datagram, 0, "unsequenced" )

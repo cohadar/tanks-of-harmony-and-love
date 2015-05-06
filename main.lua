@@ -52,13 +52,13 @@ function love.update( dt )
 	local mouse_x = love.mouse.getX()
 	if old_mouse_x ~= mouse_x or old_mouse_y ~= mouse_y then 
 		local mouse_angle = math.atan2( mouse_y - SCREEN_HEIGHT_HALF, mouse_x - SCREEN_WIDTH_HALF )
-		m_tank_command.setMouseAngle( tank_command, mouse_angle )
+		m_tank_command.setMouseAngle( tank_command, m_utils.round_angle( mouse_angle ) ) 
 		old_mouse_x = mouse_x
 		old_mouse_y = mouse_y
 		command_changed = true -- unused !
 	end
 	local tank = m_world.get_tank( 0 )
-	m_tank.update( tank, tank_command, dt )
+	m_tank.update( tank, tank_command )
 	m_world.update_tank( 0, tank )
 	m_client.update( tank, tank_command )
 end
