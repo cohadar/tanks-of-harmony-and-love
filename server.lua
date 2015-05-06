@@ -54,6 +54,7 @@ local function on_update( host, server_tick )
             tank_commands[ index ] = nil
         end        
     end    
+    if server_tick % 6 == 0 then
     for index, tank in pairs( tanks ) do 
         local client_tick = client_ticks[ index ] 
         if client_tick == nil then
@@ -64,6 +65,7 @@ local function on_update( host, server_tick )
         end
         local gram = serpent.dump( { type = "tank", index = index, tank = tank, server_tick = server_tick, client_tick = client_tick } )
         host:broadcast( gram, 0, "unsequenced" ) 
+    end
     end
 end
 

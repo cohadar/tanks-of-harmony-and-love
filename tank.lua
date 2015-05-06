@@ -10,7 +10,9 @@ TURRET_CENTER_Y = 28.0
 TURRET_BASE_OFFSET = 10
 BASE_CENTER_X = 64
 BASE_CENTER_Y = 38
-TURRET_ANGLE_VELOCITY = math.pi / 64
+TANK_MAX_VELOCITY = 4.0 * 2
+TANK_ANGLE_VELOCITY = math.pi / 128 * 2
+TURRET_ANGLE_VELOCITY = math.pi / 64 * 2
 
 -------------------------------------------------------------------------------
 function m_tank.new()

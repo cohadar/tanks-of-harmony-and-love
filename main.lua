@@ -57,10 +57,12 @@ function love.update( dt )
 		old_mouse_y = mouse_y
 		command_changed = true -- unused !
 	end
-	local tank = m_world.get_tank( 0 )
-	m_tank.update( tank, tank_command )
-	m_world.update_tank( 0, tank )
-	m_client.update( tank, tank_command )
+	if g_tick % 2 == 0 then 
+		local tank = m_world.get_tank( 0 )
+		m_tank.update( tank, tank_command )
+		m_world.update_tank( 0, tank )
+		m_client.update( tank, tank_command )
+	end
 end
 
 -------------------------------------------------------------------------------

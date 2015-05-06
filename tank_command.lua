@@ -29,22 +29,22 @@ end
 
 -------------------------------------------------------------------------------
 function m_tank_command.upPressed( self )
-	self.velocity = 4.0 
+	self.velocity = TANK_MAX_VELOCITY
 end
 
 -------------------------------------------------------------------------------
 function m_tank_command.downPressed( self )
-	self.velocity = -4.0
+	self.velocity = -TANK_MAX_VELOCITY
 end
 
 -------------------------------------------------------------------------------
 function m_tank_command.leftPressed( self )
-	self.angle_velocity = -math.pi / 128
+	self.angle_velocity = -TANK_ANGLE_VELOCITY
 end
 
 -------------------------------------------------------------------------------
 function m_tank_command.rightPressed( self )
-	self.angle_velocity = math.pi / 128
+	self.angle_velocity = TANK_ANGLE_VELOCITY
 end
 
 -------------------------------------------------------------------------------

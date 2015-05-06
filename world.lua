@@ -36,7 +36,7 @@ function m_world.connect( index )
 	--tanks[ index ] = tanks[ 0 ]
 	
 	-- testing
-	tanks[ index ] = m_utils.deepcopy( tanks[ 0 ] ) 
+	--tanks[ index ] = m_utils.deepcopy( tanks[ 0 ] ) 
 end
 
 -------------------------------------------------------------------------------

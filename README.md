@@ -30,4 +30,6 @@ Currently in development. ETA: 10 days.
   * well I guess this one will take more than a day :)
 
 ### day6 goal: finish netcode
+  * server fps: 10, client command fps: 30, client draw fps: 60
+  
 
