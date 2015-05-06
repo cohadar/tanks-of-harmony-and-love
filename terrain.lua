@@ -4,8 +4,6 @@ local m_terrain = {}
 MAP_WIDTH  = 16 -- squares
 MAP_HEIGHT = 12 -- squares
 MAP_SQUARE = 64 -- pixels
-VISIBLE_SQUARES_X = 0
-VISIBLE_SQUARES_Y = 0
 
 -------------------------------------------------------------------------------
 function m_terrain.safe_x(x)
@@ -49,8 +47,12 @@ end
 
 -------------------------------------------------------------------------------
 function m_terrain.draw()
-	for x = -10, VISIBLE_SQUARES_X + 10 do
-		for y = -10, VISIBLE_SQUARES_Y + 10 do
+	local top    = math.floor( ( -SCREEN_HEIGHT_HALF + g_camera_y ) / MAP_SQUARE ) - 1
+	local bottom = math.floor( (  SCREEN_HEIGHT_HALF + g_camera_y ) / MAP_SQUARE ) + 1
+	local left   = math.floor( ( -SCREEN_WIDTH_HALF  + g_camera_x ) / MAP_SQUARE ) - 1
+	local right  = math.floor( (  SCREEN_WIDTH_HALF  + g_camera_x ) / MAP_SQUARE ) + 1
+	for y = top, bottom do
+		for x = left, right do
 			local mx = x
 			local my = y
 			if out_of_map(mx, my) then

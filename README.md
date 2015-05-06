@@ -31,5 +31,6 @@ Currently in development. ETA: 10 days.
 
 ### day6 goal: finish netcode
   * server fps: 10, client command fps: 30, client draw fps: 60
+  * better debugging support, screen scaling
   
 

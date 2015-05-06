@@ -34,13 +34,13 @@ g_tick = 0
 function love.load()
 -- client.lua
 
-	SCREEN_WIDTH  = love.graphics.getWidth() * SCALE_GRAPHICS
-	SCREEN_HEIGHT = love.graphics.getHeight() * SCALE_GRAPHICS
+	SCREEN_WIDTH  = love.graphics.getWidth() 
+	SCREEN_HEIGHT = love.graphics.getHeight() 
 	SCREEN_WIDTH_HALF  = math.floor( SCREEN_WIDTH / 2 )
 	SCREEN_HEIGHT_HALF = math.floor( SCREEN_HEIGHT / 2 )
 
 	if GAME_DEBUG then
-		love.window.setMode( SCREEN_WIDTH, SCREEN_HEIGHT, {vsync = true, resizable = false} )
+		love.window.setMode( SCREEN_WIDTH * SCALE_GRAPHICS, SCREEN_HEIGHT * SCALE_GRAPHICS, {vsync = true, resizable = false } )
 	end
 
 	love.mouse.setVisible( true )
@@ -59,7 +59,7 @@ function love.update( dt )
 	local mouse_y = love.mouse.getY()
 	local mouse_x = love.mouse.getX()
 	if old_mouse_x ~= mouse_x or old_mouse_y ~= mouse_y then 
-		local mouse_angle = math.atan2( mouse_y - SCREEN_HEIGHT_HALF, mouse_x - SCREEN_WIDTH_HALF )
+		local mouse_angle = math.atan2( mouse_y - SCREEN_HEIGHT_HALF * SCALE_GRAPHICS, mouse_x - SCREEN_WIDTH_HALF * SCALE_GRAPHICS )
 		m_tank_command.setMouseAngle( tank_command, m_utils.round_angle( mouse_angle ) ) 
 		old_mouse_x = mouse_x
 		old_mouse_y = mouse_y
@@ -115,7 +115,7 @@ end
 function love.draw()
 	love.graphics.scale( SCALE_GRAPHICS )
 	love.graphics.push()
-	love.graphics.translate(SCREEN_WIDTH_HALF / SCALE_GRAPHICS - g_camera_x, SCREEN_HEIGHT_HALF / SCALE_GRAPHICS - g_camera_y)	
+	love.graphics.translate(SCREEN_WIDTH_HALF - g_camera_x, SCREEN_HEIGHT_HALF - g_camera_y)	
 	m_terrain.draw()
 	love.graphics.setColor(0xFF, 0xFF, 0xFF, 0xFF)
 	if m_client.is_connected() then
