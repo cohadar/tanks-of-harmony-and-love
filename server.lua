@@ -101,7 +101,7 @@ end
 -------------------------------------------------------------------------------
 if love then
     channel = love.thread.getChannel( "server_channel" )
-    value = Channel:demand()
+    value = channel:demand()
     start_server( value.host, value.port )
 else
     if arg[ 1 ] and arg[ 2 ] then
