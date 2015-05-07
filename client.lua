@@ -24,8 +24,14 @@ end
 
 -------------------------------------------------------------------------------
 function m_client.init()
+	-- nothing
+end
+
+-------------------------------------------------------------------------------
+function m_client.connect( address, port )
+	m_client.quit()
 	host = enet.host_create()
-	server = host:connect("localhost:12345")
+	server = host:connect( address .. ":" .. port )
 end
 
 -------------------------------------------------------------------------------
@@ -63,6 +69,9 @@ function m_client.update( tank, tank_command )
 		local datagram = serpent.dump( { type = "tank_command", tank_command = tank_command, client_tick = g_tick } )
     	server:send( datagram, 0, "unsequenced" )
 	end
+	if not server then 
+		return 
+	end
 	repeat
 		event = host:service(0)
 		if event then
@@ -94,7 +103,7 @@ function m_client.update( tank, tank_command )
 			elseif event.type == "disconnect" then
 				print( "disconnect" )
 				love.window.setTitle( "Not Connected" )
-				connected = false
+				m_client.quit()
 				-- TODO: handle disconnect gracefully
 			else 
 				print( "unknown event.type: ", event.type, event.data )
@@ -105,8 +114,12 @@ end
 
 -------------------------------------------------------------------------------
 function m_client.quit()
-	server:disconnect()
-	host:flush()
+	if server ~= nil then
+		server:disconnect()
+		host:flush()
+	end
+	server = nil
+	connected = false
 end
 
 -------------------------------------------------------------------------------
