@@ -1,7 +1,7 @@
 --- @module client
 local m_client = {}
 
-require "serpent"
+require "libs.serpent"
 require "enet"
 m_tank = require "tank"
 m_tank_command = require "tank_command"

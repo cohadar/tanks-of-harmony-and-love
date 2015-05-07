@@ -4,7 +4,7 @@ local m_tests = {}
 local m_tank = require "tank"
 local m_utils = require "utils"
 local m_history = require "history"
-local serpent = require "serpent"
+local serpent = require "libs.serpent"
 
 -------------------------------------------------------------------------------
 function m_tests.run_all()

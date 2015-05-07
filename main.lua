@@ -15,12 +15,13 @@ SCREEN_HEIGHT = 0
 g_camera_x = 0
 g_camera_y = 0
 
+loveframes = require "libs.loveframes"
 m_terrain = require "terrain"
 m_tank = require "tank"
 m_tank_command = require "tank_command"
 m_client = require "client"
 m_tests = require "tests"
-serpent = require "serpent"
+serpent = require "libs.serpent"
 
 m_world = require "world"
 local tank_command = m_tank_command.new()
@@ -45,8 +46,8 @@ function love.load()
 
 	love.mouse.setVisible( true )
 
-	g_tank_base = love.graphics.newImage("base.png")
-	g_tank_turret = love.graphics.newImage("turret.png")
+	g_tank_base = love.graphics.newImage("resources/base.png")
+	g_tank_turret = love.graphics.newImage("resources/turret.png")
 	m_terrain.init()
 	m_client.init()
 	m_tests.run_all()
@@ -71,44 +72,8 @@ function love.update( dt )
 		m_world.update_tank( 0, tank )
 		m_client.update( tank, tank_command )
 	end
-end
 
--------------------------------------------------------------------------------
-function love.keypressed(key)
-	if key == "escape" then
-		love.event.push("quit")
-		return
-	end
-	if key     == "up"    or key == "w" then
-		m_tank_command.upPressed( tank_command )
-		command_changed = true
-	elseif key == "down"  or key == "s" then
-		m_tank_command.downPressed( tank_command )
-		command_changed = true
-	elseif key == "left"  or key == "a" then
-		m_tank_command.leftPressed( tank_command )
-		command_changed = true
-	elseif key == "right" or key == "d" then
-		m_tank_command.rightPressed( tank_command )
-		command_changed = true
-	end
-end
-
--------------------------------------------------------------------------------
-function love.keyreleased(key)
-	if key     == "up"    or key == "w" then
-		m_tank_command.upReleased( tank_command )
-		command_changed = true
-	elseif key == "down"  or key == "s" then
-		m_tank_command.downReleased( tank_command )
-		command_changed = true
-	elseif key == "left"  or key == "a" then
-		m_tank_command.leftReleased( tank_command )
-		command_changed = true
-	elseif key == "right" or key == "d" then
-		m_tank_command.rightReleased( tank_command )
-		command_changed = true
-	end
+	loveframes.update( dt )
 end
 
 -------------------------------------------------------------------------------
@@ -133,6 +98,65 @@ function love.draw()
 	love.graphics.pop()
 	command_changed = false
 	m_text.draw()
+
+	loveframes.draw()
+end
+
+-------------------------------------------------------------------------------
+function love.keypressed( key, unicode )
+	if key == "escape" then
+		love.event.push("quit")
+		return
+	end
+	if key     == "up"    or key == "w" then
+		m_tank_command.upPressed( tank_command )
+		command_changed = true
+	elseif key == "down"  or key == "s" then
+		m_tank_command.downPressed( tank_command )
+		command_changed = true
+	elseif key == "left"  or key == "a" then
+		m_tank_command.leftPressed( tank_command )
+		command_changed = true
+	elseif key == "right" or key == "d" then
+		m_tank_command.rightPressed( tank_command )
+		command_changed = true
+	end
+
+	loveframes.keypressed( key, unicode )
+end
+
+-------------------------------------------------------------------------------
+function love.keyreleased( key )
+	if key     == "up"    or key == "w" then
+		m_tank_command.upReleased( tank_command )
+		command_changed = true
+	elseif key == "down"  or key == "s" then
+		m_tank_command.downReleased( tank_command )
+		command_changed = true
+	elseif key == "left"  or key == "a" then
+		m_tank_command.leftReleased( tank_command )
+		command_changed = true
+	elseif key == "right" or key == "d" then
+		m_tank_command.rightReleased( tank_command )
+		command_changed = true
+	end
+
+	loveframes.keyreleased(key)
+end
+
+-------------------------------------------------------------------------------
+function love.textinput( text )
+	loveframes.textinput( text )
+end
+
+-------------------------------------------------------------------------------
+function love.mousepressed( x, y, button )
+	loveframes.mousepressed( x, y, button )
+end
+
+-------------------------------------------------------------------------------
+function love.mousereleased( x, y, button )
+	loveframes.mousereleased( x, y, button )
 end
 
 -------------------------------------------------------------------------------
