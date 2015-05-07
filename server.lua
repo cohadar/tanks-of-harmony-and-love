@@ -5,15 +5,11 @@
 -- brew install enet || apt-get install enet
 -- sudo luarocks install enet
 -------------------------------------------------------------------------------
---- @module server
-local m_server = {}
-
 require "enet"
 serpent = require "libs.serpent"
 m_tank = require "tank"
 m_text = require "text"
 
-local host_address = "localhost:12345"
 local tanks = {}
 local tank_commands = {}
 local client_ticks = {}
@@ -74,9 +70,10 @@ local function on_update( host, server_tick )
 end
 
 -------------------------------------------------------------------------------
-function m_server.start()
-    m_text.print( "starting server", host_address )
-    local host = enet.host_create( host_address )
+local function start_server( host, port )
+    server_address = host .. ":" .. port
+    m_text.print( "starting server", server_address )
+    local host = enet.host_create( server_address )
     local tick = 0
     local t = os.clock()
     while true do
@@ -102,10 +99,18 @@ function m_server.start()
 end
 
 -------------------------------------------------------------------------------
-m_server.start()
+if love then
+    channel = love.thread.getChannel( "server_channel" )
+    value = Channel:demand()
+    start_server( value.host, value.port )
+else
+    if arg[ 1 ] and arg[ 2 ] then
+        start_server( arg[ 1 ], arg[ 2 ] )
+    else
+        print("Usage: lua server.lua <host> <port>")
+    end
+end
 
--------------------------------------------------------------------------------
-return m_server
 
 
 

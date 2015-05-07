@@ -68,6 +68,8 @@ function m_gui.create_menu( dt )
 			m_text.status("starting server", server_address.text .. ":" .. server_port.text )
 			thread = love.thread.newThread( "server.lua" )
 			thread:start()
+			channel = love.thread.getChannel( "server_channel" )
+			channel:push{ host = server_address.text, port = server_port.text }
 			m_client.connect( server_address.text, server_port.text )
 			gui_on = false			
     	end
