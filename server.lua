@@ -1,13 +1,17 @@
 -------------------------------------------------------------------------------
 -- game server for "Tanks of Harmony and Love"
--- standalone Lua app, not run by love2D engine
+-- can be run as standalone Lua app!
 -- you will need luasocket installed, use https://luarocks.org/#quick-start
 -- brew install enet || apt-get install enet
 -- sudo luarocks install enet
 -------------------------------------------------------------------------------
+--- @module server
+local m_server = {}
+
 require "enet"
-serpent = require "serpent"
+serpent = require "libs.serpent"
 m_tank = require "tank"
+m_text = require "text"
 
 local host_address = "localhost:12345"
 local tanks = {}
@@ -17,7 +21,7 @@ local FPS = 1 / 60
 
 -------------------------------------------------------------------------------
 local function on_connect( event ) 
-    print( "connect", event.peer:index(), os.time() )
+    m_text.print( "connect", event.peer:index(), os.time() )
     local gram = serpent.dump( { type = "index", index = event.peer:index() } ) 
     tanks[ event.peer:index() ] = m_tank.new()
     event.peer:send( gram, 0,  "unsequenced" )
@@ -25,7 +29,7 @@ end
 
 -------------------------------------------------------------------------------
 local function on_disconnect( host, event )
-    print( "disconnect", event.peer:index() )
+    m_text.print( "disconnect", event.peer:index() )
     tanks[ event.peer:index() ] = nil
     local gram = serpent.dump( { type = "player_gone", index = event.peer:index() } )
     host:broadcast( gram )
@@ -40,7 +44,7 @@ local function on_receive( event )
             tank_commands[ event.peer:index() ] = msg.tank_command
             client_ticks[ event.peer:index() ] = msg.client_tick
         else
-            print( "unknown msg.type", msg.type, event.data )
+            m_text.print( "ERROR: unknown msg.type", msg.type, event.data )
         end
     end
 end
@@ -70,8 +74,8 @@ local function on_update( host, server_tick )
 end
 
 -------------------------------------------------------------------------------
-function server_main()
-    print( "starting server", host_address )
+function m_server.start()
+    m_text.print( "starting server", host_address )
     local host = enet.host_create( host_address )
     local tick = 0
     local t = os.clock()
@@ -85,7 +89,7 @@ function server_main()
             elseif event.type == "disconnect" then
                 on_disconnect( host, event )
             else
-                print( "unknown event.type", event.type )
+                m_text.print( "ERROR: unknown event.type", event.type )
             end
         end
         local temp = os.clock()
@@ -98,8 +102,10 @@ function server_main()
 end
 
 -------------------------------------------------------------------------------
-server_main()
+m_server.start()
 
+-------------------------------------------------------------------------------
+return m_server
 
 
 

@@ -42,17 +42,17 @@ end
 
 -------------------------------------------------------------------------------
 function m_gui.start_menu( dt )
-	if gui.Button{id = "create", text = "Create Game", hotkey="c" } then
+	if gui.Button{id = "create", text = "Create", hotkey="c" } then
 		start_menu = false
 		create_menu = true
     end
 
-	if gui.Button{id = "join", text = "Join Game", hotkey="j" } then
+	if gui.Button{id = "join", text = "Join", hotkey="j" } then
 		start_menu = false
 		join_menu = true
     end   
 
-	if gui.Button{id = "exit", text = "Exit", hotkey="x" } then
+	if gui.Button{id = "quit", text = "Quit", hotkey="q" } then
 		love.event.quit()
     end      
 end
@@ -65,7 +65,11 @@ function m_gui.create_menu( dt )
         if gui.Button{id = "start_server", text = "Start Server", hotkey="s" } then
 			start_menu = true
 			create_menu = false
-			m_text.print("starting server", server_address.text .. ":" .. server_port.text )
+			m_text.status("starting server", server_address.text .. ":" .. server_port.text )
+			thread = love.thread.newThread( "server.lua" )
+			thread:start()
+			m_client.connect( server_address.text, server_port.text )
+			gui_on = false			
     	end
     end}	
 end
@@ -78,7 +82,9 @@ function m_gui.join_menu( dt )
         if gui.Button{id = "join_server", text = "Join Server", hotkey="j" } then
 			start_menu = true
 			create_menu = false
+			m_text.status("connecting to server", server_address.text .. ":" .. server_port.text )
 			m_client.connect( server_address.text, server_port.text )
+			gui_on = false
     	end
     end}	
 end

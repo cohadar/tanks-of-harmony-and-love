@@ -76,7 +76,7 @@ function m_client.update( tank, tank_command )
 		event = host:service(0)
 		if event then
 			if event.type == "connect" then
-				print( "Connected to", event.peer, os.time() )
+				m_text.status( "Connected to", event.peer )
 			elseif event.type == "receive" then
 				-- print( "Got message: ", event.data, event.peer )
 				local ok, msg = serpent.load( event.data )
@@ -92,21 +92,21 @@ function m_client.update( tank, tank_command )
 						love.window.setTitle( "Connected as Player #" .. index_on_server )
 						connected = true
 						m_world.connect( index_on_server )
-						print( "index_on_server", index_on_server )
+						m_text.print( "index on server: ", index_on_server )
 					elseif msg.type == "player_gone" then
 						m_world.player_gone( msg.index )
 						-- TODO: display disconnected tanks in gray for a short time
 					else
-						print( "unknown msg.type: ", msg.type, event.data )
+						m_text.print("ERROR: unknown msg.type: ", msg.type, event.data )
 					end
 				end
 			elseif event.type == "disconnect" then
-				print( "disconnect" )
+				m_text.status( "disconnect" )
 				love.window.setTitle( "Not Connected" )
 				m_client.quit()
 				-- TODO: handle disconnect gracefully
 			else 
-				print( "unknown event.type: ", event.type, event.data )
+				m_text.print( "ERROR: unknown event.type: ", event.type, event.data )
 			end
 		end
 	until not event

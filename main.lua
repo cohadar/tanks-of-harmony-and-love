@@ -49,6 +49,7 @@ function love.load()
 
 	g_tank_base = love.graphics.newImage("resources/base.png")
 	g_tank_turret = love.graphics.newImage("resources/turret.png")
+	m_text.init()
 	m_terrain.init()
 	m_client.init()
 	m_tests.run_all()
@@ -151,8 +152,12 @@ function love.textinput( text )
 end
 
 -------------------------------------------------------------------------------
+function love.threaderror( thread, errorstr )
+	m_text.status( errorstr )
+end
+
+-------------------------------------------------------------------------------
 function love.quit()
 	m_client.quit()
-	print("asta la vista baby")
 end
 

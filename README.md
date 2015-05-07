@@ -33,7 +33,8 @@ Currently in development. ETA: 9 days.
   * server fps: 10, client command fps: 30, client draw fps: 60
   * better debugging support, screen scaling
   
-### day7 goal: GUI & HUD
+### day7 goal: GUI 
   * picked Quickie over LoveFrames
+  * server can now be started from ingame
   
 
