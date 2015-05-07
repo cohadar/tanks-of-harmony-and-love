@@ -34,4 +34,6 @@ Currently in development. ETA: 9 days.
   * better debugging support, screen scaling
   
 ### day7 goal: GUI & HUD
+  * picked Quickie over LoveFrames
+  
 

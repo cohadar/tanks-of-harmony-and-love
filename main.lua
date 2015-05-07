@@ -15,7 +15,8 @@ SCREEN_HEIGHT = 0
 g_camera_x = 0
 g_camera_y = 0
 
-loveframes = require "libs.loveframes"
+m_gui = require "gui"
+quickie = require "libs.quickie"
 m_terrain = require "terrain"
 m_tank = require "tank"
 m_tank_command = require "tank_command"
@@ -73,13 +74,13 @@ function love.update( dt )
 		m_client.update( tank, tank_command )
 	end
 
-	loveframes.update( dt )
+    m_gui.update( dt )
 end
 
 -------------------------------------------------------------------------------
 function love.draw()
-	love.graphics.scale( SCALE_GRAPHICS )
 	love.graphics.push()
+    love.graphics.scale( SCALE_GRAPHICS )
 	love.graphics.translate(SCREEN_WIDTH_HALF - g_camera_x, SCREEN_HEIGHT_HALF - g_camera_y)	
 	m_terrain.draw()
 	love.graphics.setColor(0xFF, 0xFF, 0xFF, 0xFF)
@@ -99,15 +100,15 @@ function love.draw()
 	command_changed = false
 	m_text.draw()
 
-	loveframes.draw()
+    quickie.core.draw()
 end
 
 -------------------------------------------------------------------------------
 function love.keypressed( key, unicode )
-	if key == "escape" then
-		love.event.push("quit")
-		return
-	end
+	-- if key == "escape" then
+	-- 	love.event.push("quit")
+	-- 	return
+	-- end
 	if key     == "up"    or key == "w" then
 		m_tank_command.upPressed( tank_command )
 		command_changed = true
@@ -122,7 +123,7 @@ function love.keypressed( key, unicode )
 		command_changed = true
 	end
 
-	loveframes.keypressed( key, unicode )
+    quickie.keyboard.pressed( key )
 end
 
 -------------------------------------------------------------------------------
@@ -141,22 +142,12 @@ function love.keyreleased( key )
 		command_changed = true
 	end
 
-	loveframes.keyreleased(key)
+    m_gui.keyreleased( key )
 end
 
 -------------------------------------------------------------------------------
 function love.textinput( text )
-	loveframes.textinput( text )
-end
-
--------------------------------------------------------------------------------
-function love.mousepressed( x, y, button )
-	loveframes.mousepressed( x, y, button )
-end
-
--------------------------------------------------------------------------------
-function love.mousereleased( x, y, button )
-	loveframes.mousereleased( x, y, button )
+    quickie.keyboard.textinput( text )
 end
 
 -------------------------------------------------------------------------------
