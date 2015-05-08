@@ -1,7 +1,7 @@
 # Mighty Cohadar's Tanks of Harmony and Love
 Network Multiplayer tank game in Love2D engine.
 
-Currently in development. ETA: 9 days.
+Currently in development. ETA: 8 days.
 
 <img src="https://github.com/cohadar/tanks-of-harmony-and-love/blob/master/screenshot.png">
 
@@ -36,5 +36,9 @@ Currently in development. ETA: 9 days.
 ### day7 goal: GUI 
   * picked Quickie over LoveFrames
   * server can now be started from ingame
+  * replaced serpent with (modified) smallfolk
+
+### day8 goal: gameplay, lets add some bullets
+
   
 
