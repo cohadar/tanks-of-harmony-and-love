@@ -18,7 +18,8 @@ local index_on_server = 0
 local client_tick = 0
 
 -------------------------------------------------------------------------------
-function m_client.getTick()
+function m_client.incTick()
+	client_tick = client_tick + 1
 	return client_tick
 end
 
@@ -47,7 +48,6 @@ local function tank_sync( msg )
 	local old_tank = m_history.get_tank( msg.client_tick )
 	if old_tank == nil then
 		m_text.print("nil_sync", msg.client_tick, msg.server_tick, client_tick)
-		print("nil_sync", msg.client_tick, msg.server_tick, client_tick)
 		-- TODO: insted of resetting, replay modified from history
 		m_history.reset()
 		client_tick = msg.server_tick + 1
@@ -69,7 +69,6 @@ end
 
 -------------------------------------------------------------------------------
 function m_client.update( tank, tank_command )
-	client_tick = client_tick + tank_command.repeat_count
 	if connected then
 		local datagram = m_utils.pack{ type = "tank_command", tank_command = tank_command, client_tick = client_tick }
     	server:send( datagram, 0, "unsequenced" )

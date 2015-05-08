@@ -22,6 +22,18 @@ local TANK_ANGLE_VELOCITY = math.pi / 128 * 2
 local TURRET_ANGLE_VELOCITY = math.pi / 64 * 2
 
 -------------------------------------------------------------------------------
+function m_tank.newCommand()
+	return {
+		up = false,
+		down = false,
+		left = false,
+		right = false,
+		mouse_angle = 0.0,
+		repeat_count = 0
+	}
+end
+
+-------------------------------------------------------------------------------
 function m_tank.new()
 	local self = {}
 	self.x = 256.0

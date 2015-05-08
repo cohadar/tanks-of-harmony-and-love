@@ -16,9 +16,12 @@ local client_ticks = {}
 
 -------------------------------------------------------------------------------
 local function on_connect( event ) 
-    m_text.print( "connect", event.peer:index(), os.time() )
-    local gram = m_utils.pack{ type = "index", index = event.peer:index() }
-    tanks[ event.peer:index() ] = m_tank.new()
+    local index = event.peer:index()
+    m_text.print( "connect", index, os.time() )
+    local gram = m_utils.pack{ type = "index", index = index }
+    tanks[ index ] = m_tank.new()
+    tank_commands[ index ] = m_tank.newCommand()
+    client_ticks[ index ] = 0
     event.peer:send( gram, 0,  "unsequenced" )
 end
 
@@ -45,16 +48,11 @@ end
 -------------------------------------------------------------------------------
 local function on_update( server_tick )
     for index, tank in pairs( tanks ) do 
-        if tank_commands[ index ] ~= nil then
+        for i = 1, tank_commands[ index ].repeat_count do 
             m_tank.update( tank, tank_commands[ index ] )
-        end        
-        local client_tick = client_ticks[ index ] 
-        if client_tick == nil then
-            client_tick = server_tick
-            client_ticks[ index ] = server_tick 
-        else
+            local client_tick = client_ticks[ index ] 
             client_ticks[ index ] = client_ticks[ index ] + 1    
-        end        
+        end
     end    
 end
 

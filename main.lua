@@ -25,14 +25,7 @@ m_world = require "world"
 m_bullets = require "bullets"
 m_ticker = require "ticker"
 
-local tank_command = {
-	up = false,
-	down = false,
-	left = false,
-	right = false,
-	mouse_angle = 0.0,
-	repeat_count = 0
-}
+local tank_command = m_tank.newCommand()
 
 -------------------------------------------------------------------------------
 function love.load()
@@ -70,7 +63,7 @@ function love.update( dt )
 		local tank = m_world.get_tank( 0 )
 		m_tank.update( tank, tank_command )
 		m_world.update_tank( 0, tank )
-		m_history.tank_record( m_client.getTick() + tank_command.repeat_count, tank )
+		m_history.tank_record( m_client.incTick(), tank )
 	    m_bullets.update()
 	end
 	if tank_command.repeat_count > 0 then
