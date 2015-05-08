@@ -3,6 +3,16 @@ local m_conf = {}
 
 m_conf.GAME_DEBUG = true
 m_conf.NETCODE_DEBUG = true
+m_conf.SCREEN_WIDTH  = 0
+m_conf.SCREEN_HEIGHT = 0
+m_conf.SCREEN_WIDTH_HALF  = 0
+m_conf.SCREEN_HEIGHT_HALF = 0
+
+if m_conf.GAME_DEBUG then
+	m_conf.SCALE_GRAPHICS = 0.5
+else
+	m_conf.SCALE_GRAPHICS = 1.00
+end
 
 -------------------------------------------------------------------------------
 function love.conf(t)

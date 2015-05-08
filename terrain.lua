@@ -1,6 +1,8 @@
 --- @module terrain
 local m_terrain = {}
 
+local m_conf = require "conf"
+
 MAP_WIDTH  = 16 -- squares
 MAP_HEIGHT = 12 -- squares
 MAP_SQUARE = 64 -- pixels
@@ -61,10 +63,10 @@ end
 
 -------------------------------------------------------------------------------
 function m_terrain.draw()
-	local top    = math.floor( ( -SCREEN_HEIGHT_HALF + g_camera_y ) / MAP_SQUARE ) - 1
-	local bottom = math.floor( (  SCREEN_HEIGHT_HALF + g_camera_y ) / MAP_SQUARE ) + 1
-	local left   = math.floor( ( -SCREEN_WIDTH_HALF  + g_camera_x ) / MAP_SQUARE ) - 1
-	local right  = math.floor( (  SCREEN_WIDTH_HALF  + g_camera_x ) / MAP_SQUARE ) + 1
+	local top    = math.floor( ( -m_conf.SCREEN_HEIGHT_HALF + g_camera_y ) / MAP_SQUARE ) - 1
+	local bottom = math.floor( (  m_conf.SCREEN_HEIGHT_HALF + g_camera_y ) / MAP_SQUARE ) + 1
+	local left   = math.floor( ( -m_conf.SCREEN_WIDTH_HALF  + g_camera_x ) / MAP_SQUARE ) - 1
+	local right  = math.floor( (  m_conf.SCREEN_WIDTH_HALF  + g_camera_x ) / MAP_SQUARE ) + 1
 	for y = top, bottom do
 		for x = left, right do
 			local mx = x
