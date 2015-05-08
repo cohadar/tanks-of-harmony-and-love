@@ -11,6 +11,8 @@ local TURRET_CENTER_Y = 28.0
 local TURRET_BASE_OFFSET = 10
 local BASE_CENTER_X = 64
 local BASE_CENTER_Y = 38
+local MUZZLE_LENGTH = 120
+local MUZZLE_SHIFT = -9
 
 -- gameplay properties
 local FPS = 32
@@ -118,7 +120,9 @@ function m_tank.update( self, tank_command )
 	self.turret_angle = m_utils.round_angle( self.turret_angle )
 	if tank_command.fire then
 		tank_command.fire = false
-		m_bullets.fire( self.x, self.y, self.turret_angle )
+		local turret_x, turret_y = m_tank.turretXY( self )
+		local muzzle_x, muzzle_y = m_tank.muzzleXY( self, turret_x, turret_y )
+		m_bullets.fire( muzzle_x, muzzle_y, self.turret_angle )
 	end
 
 	-- update velocities
@@ -161,11 +165,28 @@ function m_tank.update( self, tank_command )
 end
 
 -------------------------------------------------------------------------------
-function m_tank.draw( self )
-	love.graphics.draw( g_tank_base, self.x, self.y, self.angle, 1.0, 1.0, BASE_CENTER_X, BASE_CENTER_Y )
+function m_tank.turretXY( self )
 	local turret_x = self.x + TURRET_BASE_OFFSET * math.cos( self.angle )
 	local turret_y = self.y + TURRET_BASE_OFFSET * math.sin( self.angle )
+	return turret_x, turret_y
+end
+
+-------------------------------------------------------------------------------
+function m_tank.muzzleXY( self, turret_x, turret_y )
+	local muzzle_x = turret_x + MUZZLE_LENGTH * math.cos( self.turret_angle )
+	local muzzle_y = turret_y + MUZZLE_LENGTH * math.sin( self.turret_angle )
+	muzzle_x = muzzle_x + MUZZLE_SHIFT * math.cos( math.pi / 2 + self.turret_angle )
+	muzzle_y = muzzle_y + MUZZLE_SHIFT * math.sin( math.pi / 2 + self.turret_angle )
+	return muzzle_x, muzzle_y
+end
+
+-------------------------------------------------------------------------------
+function m_tank.draw( self )
+	local turret_x, turret_y = m_tank.turretXY( self )
+	--local muzzle_x, muzzle_y = m_tank.muzzleXY( self, turret_x, turret_y )
+	love.graphics.draw( g_tank_base, self.x, self.y, self.angle, 1.0, 1.0, BASE_CENTER_X, BASE_CENTER_Y )
 	love.graphics.draw( g_tank_turret, turret_x, turret_y, self.turret_angle, 1.0, 1.0, TURRET_CENTER_X, TURRET_CENTER_Y )
+	--love.graphics.circle( "fill", muzzle_x, muzzle_y, 10 )
 end
 
 -------------------------------------------------------------------------------

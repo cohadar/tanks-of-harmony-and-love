@@ -5,7 +5,7 @@ m_terrain = require "terrain"
 
 local img_bullet = nil
 
-local BULLET_SPEED = 1
+local BULLET_SPEED = 30
 
 local MAX_BULLETS = 100
 local last_bullet = 0
