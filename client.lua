@@ -2,6 +2,7 @@
 local m_client = {}
 
 require "enet"
+m_conf = require "conf"
 m_tank = require "tank"
 m_utils = require "utils"
 m_world = require "world"
@@ -48,7 +49,7 @@ end
 
 -------------------------------------------------------------------------------
 local function tank_sync( msg )
-	if NETCODE_DEBUG then
+	if m_conf.NETCODE_DEBUG then
 		m_world.update_tank( msg.index, msg.tank )
 	end
 	local old_tank = m_history.get_tank( msg.client_tick )

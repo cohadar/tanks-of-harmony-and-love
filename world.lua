@@ -1,6 +1,7 @@
 --- @module world
 local m_world = {}
 
+m_conf = require "conf"
 m_tank = require "tank"
 m_utils = require "utils"
 
@@ -32,7 +33,7 @@ end
 
 -------------------------------------------------------------------------------
 function m_world.connect( index )
-	if NETCODE_DEBUG then
+	if m_conf.NETCODE_DEBUG then
 		tanks[ index ] = m_utils.deepcopy( tanks[ 0 ] ) 
 	end
 end
