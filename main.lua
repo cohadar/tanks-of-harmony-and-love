@@ -22,8 +22,9 @@ m_tank = require "tank"
 m_tank_command = require "tank_command"
 m_client = require "client"
 m_tests = require "tests"
-
 m_world = require "world"
+m_bullets = require "bullets"
+
 local tank_command = m_tank_command.new()
 local old_mouse_x = 0
 local old_mouse_y = 0
@@ -53,6 +54,7 @@ function love.load()
 	m_client.init()
 	m_tests.run_all()
 	love.window.setTitle( "Not Connected" )
+	m_bullets.init()
 end
 
 -------------------------------------------------------------------------------
@@ -75,6 +77,7 @@ function love.update( dt )
 	end
 
     m_gui.update( dt )
+    m_bullets.update()
 end
 
 -------------------------------------------------------------------------------
@@ -96,6 +99,7 @@ function love.draw()
 	else
 		m_tank.draw( m_world.get_tank( 0 ) )
 	end
+	m_bullets.draw()
 	love.graphics.pop()
 	command_changed = false
 	m_text.draw()

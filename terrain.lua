@@ -28,6 +28,20 @@ function m_terrain.safe_y(y)
 end
 
 -------------------------------------------------------------------------------
+function m_terrain.is_inside( x, y, padding )
+	if x < padding or y < padding then
+		return false
+	end
+	if y > MAP_HEIGHT * MAP_SQUARE - padding then
+		return false
+	end
+	if x > MAP_WIDTH * MAP_SQUARE - padding then
+		return false
+	end
+	return true
+end
+
+-------------------------------------------------------------------------------
 function m_terrain.init()
 	--love.graphics.setBackgroundColor(0x00, 0x00, 0x00, 0xFF)
 	VISIBLE_SQUARES_X = MAP_WIDTH -- math.floor(SCREEN_WIDTH / MAP_SQUARE) + 2

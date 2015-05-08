@@ -5,11 +5,13 @@ local m_terrain = require "terrain"
 local m_utils = require "utils"
 
 -- drawing properties 
-TURRET_CENTER_X = 21.0
-TURRET_CENTER_Y = 28.0
-TURRET_BASE_OFFSET = 10
-BASE_CENTER_X = 64
-BASE_CENTER_Y = 38
+local TURRET_CENTER_X = 21.0
+local TURRET_CENTER_Y = 28.0
+local TURRET_BASE_OFFSET = 10
+local BASE_CENTER_X = 64
+local BASE_CENTER_Y = 38
+
+-- gameplay properties
 TANK_MAX_VELOCITY = 4.0 * 2
 TANK_ANGLE_VELOCITY = math.pi / 128 * 2
 TURRET_ANGLE_VELOCITY = math.pi / 64 * 2
