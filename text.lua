@@ -1,7 +1,7 @@
 --- @module text
 local m_text = {}
 
-local MAX_FLOATING = 100
+local MAX_FLOATING = 20
 floating = {}
 local last_floating = 0
 local FPS = 60

@@ -39,6 +39,7 @@ Currently in development. ETA: 8 days.
   * replaced serpent with (modified) smallfolk
 
 ### day8 goal: gameplay, lets add some bullets
-
+  * basic bullet drawing
+  * better tank_command & tank velocity controls
   
 

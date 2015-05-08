@@ -8,6 +8,7 @@
 require "enet"
 m_utils = require "utils"
 m_tank = require "tank"
+m_tank_command = require "tank_command"
 m_text = require "text"
 
 local tanks = {}
@@ -48,7 +49,7 @@ local function on_update( host, server_tick )
     for index, tank in pairs( tanks ) do 
         if tank_commands[ index ] ~= nil then
             m_tank.update( tank, tank_commands[ index ] )
-            tank_commands[ index ] = nil
+            m_tank_command.update( tank_commands[ index ] )
         end        
     end    
     if server_tick % 6 == 0 then

@@ -1,5 +1,5 @@
 GAME_DEBUG = true
-NETCODE_DEBUG = false
+NETCODE_DEBUG = true
 
 -------------------------------------------------------------------------------
 function love.conf(t)

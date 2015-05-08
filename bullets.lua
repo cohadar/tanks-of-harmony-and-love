@@ -5,7 +5,7 @@ m_terrain = require "terrain"
 
 local img_bullet = nil
 
-local BULLET_SPEED = 40
+local BULLET_SPEED = 1
 
 local MAX_BULLETS = 100
 local last_bullet = 0
@@ -42,10 +42,9 @@ function m_bullets.update()
 	for index, self in pairs( bullets ) do
 		self.x = self.x + self.dx
 		self.y = self.y + self.dy
-		if m_terrain.is_inside( self.x, self.y, 3 * MAP_SQUARE ) then
-			return self
-		end
-		bullets[ index ] = nil		
+		if m_terrain.is_inside( self.x, self.y, -3 * MAP_SQUARE )  == false then
+			bullets[ index ] = nil
+		end	
 	end
 end
 

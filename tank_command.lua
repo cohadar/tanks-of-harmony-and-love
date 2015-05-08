@@ -4,80 +4,80 @@ local m_tank_command = {}
 -------------------------------------------------------------------------------
 function m_tank_command.new()
 	local self = {}
-	self.velocity = 0.0
-	self.angle_velocity = 0.0
 	self.mouse_angle = 0.0
+	self.fire = false
+	self.up = false
+	self.down = false
+	self.left = false
+	self.right = false
+	self.changed = false
 	return self
 end
 
 -------------------------------------------------------------------------------
-function m_tank_command.neq( a, b )
-	if b == nil then
-		return true
-	end
-	if math.abs(a.mouse_angle - b.mouse_angle) > EPSILON then
-		return true
-	end
-	if math.abs(a.velocity - b.velocity) > EPSILON then
-		return true
-	end
-	if math.abs(a.angle_velocity - b.angle_velocity) > EPSILON then
-		return true
-	end
-	return false
+function m_tank_command.update( self )
+	self.fire = false
+	self.changed = false
 end
 
 -------------------------------------------------------------------------------
 function m_tank_command.upPressed( self )
-	self.velocity = TANK_MAX_VELOCITY
+	self.up = true
+	self.changed = true
 end
 
 -------------------------------------------------------------------------------
 function m_tank_command.downPressed( self )
-	self.velocity = -TANK_MAX_VELOCITY
+	self.down = true
+	self.changed = true
 end
 
 -------------------------------------------------------------------------------
 function m_tank_command.leftPressed( self )
-	self.angle_velocity = -TANK_ANGLE_VELOCITY
+	self.left = true
+	self.changed = true
 end
 
 -------------------------------------------------------------------------------
 function m_tank_command.rightPressed( self )
-	self.angle_velocity = TANK_ANGLE_VELOCITY
+	self.right = true
+	self.changed = true
 end
 
 -------------------------------------------------------------------------------
 function m_tank_command.upReleased( self )
-	if self.velocity > 0 then
-		self.velocity = 0.0 
-	end
+	self.up = false
+	self.changed = true
 end
 
 -------------------------------------------------------------------------------
 function m_tank_command.downReleased( self )
-	if self.velocity < 0 then
-		self.velocity = 0.0
-	end
+	self.down = false
+	self.changed = true
 end
 
 -------------------------------------------------------------------------------
 function m_tank_command.leftReleased( self )
-	if self.angle_velocity < 0 then
-		self.angle_velocity = 0
-	end
+	self.left = false
+	self.changed = true
 end
 
 -------------------------------------------------------------------------------
 function m_tank_command.rightReleased( self )
-	if self.angle_velocity > 0 then
-		self.angle_velocity = 0
-	end
+	self.right = false
+	self.changed = true
 end
 
 -------------------------------------------------------------------------------
 function m_tank_command.setMouseAngle( self, mouse_angle )
 	self.mouse_angle = mouse_angle
+	self.changed = true
+end
+
+-------------------------------------------------------------------------------
+function m_tank_command.fire( self )
+	self.fire = true
+	self.changed = true
 end
 
 -------------------------------------------------------------------------------

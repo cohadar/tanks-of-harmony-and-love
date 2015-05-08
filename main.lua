@@ -28,7 +28,6 @@ m_bullets = require "bullets"
 local tank_command = m_tank_command.new()
 local old_mouse_x = 0
 local old_mouse_y = 0
-local command_changed = false
 
 g_tick = 0
 
@@ -67,17 +66,17 @@ function love.update( dt )
 		m_tank_command.setMouseAngle( tank_command, m_utils.round_angle( mouse_angle ) ) 
 		old_mouse_x = mouse_x
 		old_mouse_y = mouse_y
-		command_changed = true -- unused !
 	end
-	if g_tick % 2 == 0 then 
-		local tank = m_world.get_tank( 0 )
-		m_tank.update( tank, tank_command )
-		m_world.update_tank( 0, tank )
-		m_client.update( tank, tank_command )
-	end
+
+	local tank = m_world.get_tank( 0 )
+	m_tank.update( tank, tank_command )
+	m_world.update_tank( 0, tank )
+	m_client.update( tank, tank_command )
 
     m_gui.update( dt )
     m_bullets.update()
+
+    m_tank_command.update( tank_command )
 end
 
 -------------------------------------------------------------------------------
@@ -101,7 +100,6 @@ function love.draw()
 	end
 	m_bullets.draw()
 	love.graphics.pop()
-	command_changed = false
 	m_text.draw()
 
     quickie.core.draw()
@@ -115,16 +113,12 @@ function love.keypressed( key, unicode )
 	-- end
 	if key     == "up"    or key == "w" then
 		m_tank_command.upPressed( tank_command )
-		command_changed = true
 	elseif key == "down"  or key == "s" then
 		m_tank_command.downPressed( tank_command )
-		command_changed = true
 	elseif key == "left"  or key == "a" then
 		m_tank_command.leftPressed( tank_command )
-		command_changed = true
 	elseif key == "right" or key == "d" then
 		m_tank_command.rightPressed( tank_command )
-		command_changed = true
 	end
 
     quickie.keyboard.pressed( key )
@@ -134,19 +128,22 @@ end
 function love.keyreleased( key )
 	if key     == "up"    or key == "w" then
 		m_tank_command.upReleased( tank_command )
-		command_changed = true
 	elseif key == "down"  or key == "s" then
 		m_tank_command.downReleased( tank_command )
-		command_changed = true
 	elseif key == "left"  or key == "a" then
 		m_tank_command.leftReleased( tank_command )
-		command_changed = true
 	elseif key == "right" or key == "d" then
 		m_tank_command.rightReleased( tank_command )
-		command_changed = true
+	elseif key == " " then
+		m_tank_command.fire( tank_command )
 	end
 
     m_gui.keyreleased( key )
+end
+
+-------------------------------------------------------------------------------
+function love.mousereleased( x, y, button )
+	m_tank_command.fire( tank_command )
 end
 
 -------------------------------------------------------------------------------

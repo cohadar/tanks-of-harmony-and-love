@@ -62,7 +62,7 @@ end
 
 -------------------------------------------------------------------------------
 function m_client.update( tank, tank_command )
-	if connected then
+	if connected and tank_command.changed then
 		m_history.tank_record( g_tick, tank )
 		local datagram = m_utils.pack{ type = "tank_command", tank_command = tank_command, client_tick = g_tick }
     	server:send( datagram, 0, "unsequenced" )
