@@ -3,6 +3,7 @@ local m_conf = {}
 
 m_conf.GAME_DEBUG = true
 m_conf.NETCODE_DEBUG = true
+
 m_conf.SCREEN_WIDTH  = 0
 m_conf.SCREEN_HEIGHT = 0
 m_conf.SCREEN_WIDTH_HALF  = 0
@@ -15,7 +16,7 @@ else
 end
 
 -------------------------------------------------------------------------------
-function love.conf(t)
+function love.conf( t )
 	t.identity = "Mighty Cohadar's Tanks of Harmony and Love"
 	t.window.width  = 16 * 64  
 	t.window.height =  9 * 64 

@@ -61,7 +61,7 @@ function love.update( dt )
 	    bullets.update()
 	end
 	if count > 0 then
-		client.update( localhost_tank, _tankCommand )
+		client.update( _tankCommand )
 	end
 	if count > 9 then
 		-- TODO: proper disconnect here
@@ -79,7 +79,7 @@ function love.draw()
 	)	
 	terrain.draw()
 	love.graphics.setColor(0xFF, 0xFF, 0xFF, 0xFF)
-	if client.is_connected() then
+	if client.isConnected() then
 		for key, tnk in world.tank_pairs() do 
 			if key == 0 then
 				love.graphics.setColor(0xFF, 0xFF, 0x00, 0xFF)
