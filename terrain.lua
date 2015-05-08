@@ -3,12 +3,16 @@ local m_terrain = {}
 
 local m_conf = require "conf"
 
+-- camera uses terrain coordinate system
+m_terrain.camera_x = 0
+m_terrain.camera_y = 0
+
 MAP_WIDTH  = 16 -- squares
 MAP_HEIGHT = 12 -- squares
 MAP_SQUARE = 64 -- pixels
 
 -------------------------------------------------------------------------------
-function m_terrain.safe_x(x)
+function m_terrain.safe_x( x )
 	if x < 0 then
 		return 0
 	end
@@ -19,7 +23,7 @@ function m_terrain.safe_x(x)
 end
 
 -------------------------------------------------------------------------------
-function m_terrain.safe_y(y)
+function m_terrain.safe_y( y )
 	if y < 0 then
 		return 0
 	end
@@ -51,7 +55,7 @@ function m_terrain.init()
 end
 
 -------------------------------------------------------------------------------
-local function out_of_map(mx, my) 
+local function out_of_map( mx, my ) 
 	if mx < 0 or my < 0 then
 		return true
 	end
@@ -63,10 +67,10 @@ end
 
 -------------------------------------------------------------------------------
 function m_terrain.draw()
-	local top    = math.floor( ( -m_conf.SCREEN_HEIGHT_HALF + g_camera_y ) / MAP_SQUARE ) - 1
-	local bottom = math.floor( (  m_conf.SCREEN_HEIGHT_HALF + g_camera_y ) / MAP_SQUARE ) + 1
-	local left   = math.floor( ( -m_conf.SCREEN_WIDTH_HALF  + g_camera_x ) / MAP_SQUARE ) - 1
-	local right  = math.floor( (  m_conf.SCREEN_WIDTH_HALF  + g_camera_x ) / MAP_SQUARE ) + 1
+	local top    = math.floor( ( -m_conf.SCREEN_HEIGHT_HALF + m_terrain.camera_y ) / MAP_SQUARE ) - 1
+	local bottom = math.floor( (  m_conf.SCREEN_HEIGHT_HALF + m_terrain.camera_y ) / MAP_SQUARE ) + 1
+	local left   = math.floor( ( -m_conf.SCREEN_WIDTH_HALF  + m_terrain.camera_x ) / MAP_SQUARE ) - 1
+	local right  = math.floor( (  m_conf.SCREEN_WIDTH_HALF  + m_terrain.camera_x ) / MAP_SQUARE ) + 1
 	for y = top, bottom do
 		for x = left, right do
 			local mx = x

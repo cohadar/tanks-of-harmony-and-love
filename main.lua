@@ -3,10 +3,6 @@ local m_main = {}
 
 io.stdout:setvbuf("no")
 
--- camera uses terrain coordinate system
-g_camera_x = 0
-g_camera_y = 0
-
 m_gui = require "gui"
 m_quickie = require "libs.quickie"
 m_terrain = require "terrain"
@@ -77,8 +73,8 @@ function love.draw()
 	love.graphics.push()
     love.graphics.scale( m_conf.SCALE_GRAPHICS )
 	love.graphics.translate( 
-		m_conf.SCREEN_WIDTH_HALF  - g_camera_x, 
-		m_conf.SCREEN_HEIGHT_HALF - g_camera_y
+		m_conf.SCREEN_WIDTH_HALF  - m_terrain.camera_x, 
+		m_conf.SCREEN_HEIGHT_HALF - m_terrain.camera_y
 	)	
 	m_terrain.draw()
 	love.graphics.setColor(0xFF, 0xFF, 0xFF, 0xFF)

@@ -96,8 +96,8 @@ function m_tank.update( self, tank_command )
 	-- update position
 	self.x = math.floor( m_terrain.safe_x( self.x + self.velocity * math.cos( self.angle ) ) )
 	self.y = math.floor( m_terrain.safe_y( self.y + self.velocity * math.sin( self.angle ) ) )
-	g_camera_x = self.x
-	g_camera_y = self.y	
+	m_terrain.camera_x = self.x
+	m_terrain.camera_y = self.y
 	self.angle = m_utils.round_angle( self.angle + self.angle_velocity )
 
 	-- update turret angle
