@@ -13,7 +13,7 @@ local BASE_CENTER_X = 64
 local BASE_CENTER_Y = 38
 
 -- gameplay properties
-local FPS = 60
+local FPS = 32
 local TANK_VELOCITY_MAX = 4.0 * 2
 local TANK_VELOCITY_DELTA = TANK_VELOCITY_MAX / FPS / 2
 local TANK_BREAKING_VELOCITY_DELTA = TANK_VELOCITY_DELTA * 2
@@ -45,16 +45,16 @@ end
 
 -------------------------------------------------------------------------------
 function m_tank.neq( a, b )
-	if math.abs(a.x - b.x) > 1 then
+	if a.x ~= b.x then
 		return true
 	end
-	if math.abs(a.y - b.y) > 1 then
+	if a.y ~= b.y then
 		return true
 	end
-	if math.abs(a.angle - b.angle) > 0.01 then
+	if a.angle ~= b.angle then
 		return true
 	end
-	if math.abs(a.turret_angle - b.turret_angle) > 0.01 then
+	if a.turret_angle ~= b.turret_angle then
 		return true
 	end
 	return false

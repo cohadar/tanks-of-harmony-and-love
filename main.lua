@@ -19,17 +19,20 @@ m_gui = require "gui"
 quickie = require "libs.quickie"
 m_terrain = require "terrain"
 m_tank = require "tank"
-m_tank_command = require "tank_command"
 m_client = require "client"
 m_tests = require "tests"
 m_world = require "world"
 m_bullets = require "bullets"
+m_ticker = require "ticker"
 
-local tank_command = m_tank_command.new()
-local old_mouse_x = 0
-local old_mouse_y = 0
-
-g_tick = 0
+local tank_command = {
+	up = false,
+	down = false,
+	left = false,
+	right = false,
+	mouse_angle = 0.0,
+	repeat_count = 0
+}
 
 -------------------------------------------------------------------------------
 function love.load()
@@ -54,29 +57,28 @@ function love.load()
 	m_tests.run_all()
 	love.window.setTitle( "Not Connected" )
 	m_bullets.init()
+	m_ticker.init( love.timer.getTime() )
 end
 
 -------------------------------------------------------------------------------
 function love.update( dt )
-	g_tick = g_tick + 1
-	local mouse_y = love.mouse.getY()
-	local mouse_x = love.mouse.getX()
-	if old_mouse_x ~= mouse_x or old_mouse_y ~= mouse_y then 
-		local mouse_angle = math.atan2( mouse_y - SCREEN_HEIGHT_HALF * SCALE_GRAPHICS, mouse_x - SCREEN_WIDTH_HALF * SCALE_GRAPHICS )
-		m_tank_command.setMouseAngle( tank_command, m_utils.round_angle( mouse_angle ) ) 
-		old_mouse_x = mouse_x
-		old_mouse_y = mouse_y
+	m_gui.update( dt )
+	local mark = love.timer.getTime()
+	tank_command.repeat_count = 0
+	while m_ticker.tick( mark ) and tank_command.repeat_count < 10 do
+		tank_command.repeat_count = tank_command.repeat_count + 1
+		local tank = m_world.get_tank( 0 )
+		m_tank.update( tank, tank_command )
+		m_world.update_tank( 0, tank )
+	    m_bullets.update()
 	end
-
-	local tank = m_world.get_tank( 0 )
-	m_tank.update( tank, tank_command )
-	m_world.update_tank( 0, tank )
-	m_client.update( tank, tank_command )
-
-    m_gui.update( dt )
-    m_bullets.update()
-
-    m_tank_command.update( tank_command )
+	if tank_command.repeat_count > 0 then
+		m_client.update( tank, tank_command )
+	end
+	if tank_command.repeat_count == 10 then
+		-- TODO: proper disconnect here
+		error "you lag too much"
+	end
 end
 
 -------------------------------------------------------------------------------
@@ -112,13 +114,13 @@ function love.keypressed( key, unicode )
 	-- 	return
 	-- end
 	if key     == "up"    or key == "w" then
-		m_tank_command.upPressed( tank_command )
+		tank_command.up = true
 	elseif key == "down"  or key == "s" then
-		m_tank_command.downPressed( tank_command )
+		tank_command.down = true
 	elseif key == "left"  or key == "a" then
-		m_tank_command.leftPressed( tank_command )
+		tank_command.left = true
 	elseif key == "right" or key == "d" then
-		m_tank_command.rightPressed( tank_command )
+		tank_command.right = true
 	end
 
     quickie.keyboard.pressed( key )
@@ -127,15 +129,15 @@ end
 -------------------------------------------------------------------------------
 function love.keyreleased( key )
 	if key     == "up"    or key == "w" then
-		m_tank_command.upReleased( tank_command )
+		tank_command.up = false
 	elseif key == "down"  or key == "s" then
-		m_tank_command.downReleased( tank_command )
+		tank_command.down = false
 	elseif key == "left"  or key == "a" then
-		m_tank_command.leftReleased( tank_command )
+		tank_command.left = false
 	elseif key == "right" or key == "d" then
-		m_tank_command.rightReleased( tank_command )
+		tank_command.right = false
 	elseif key == " " then
-		m_tank_command.fire( tank_command )
+		tank_command.fire = true
 	end
 
     m_gui.keyreleased( key )
@@ -143,12 +145,18 @@ end
 
 -------------------------------------------------------------------------------
 function love.mousereleased( x, y, button )
-	m_tank_command.fire( tank_command )
+	tank_command.fire = true
 end
 
 -------------------------------------------------------------------------------
 function love.textinput( text )
     quickie.keyboard.textinput( text )
+end
+
+-------------------------------------------------------------------------------
+function love.mousemoved( mouse_x, mouse_y, dx, dy )
+	local mouse_angle = math.atan2( mouse_y - SCREEN_HEIGHT_HALF * SCALE_GRAPHICS, mouse_x - SCREEN_WIDTH_HALF * SCALE_GRAPHICS )
+	tank_command.mouse_angle = m_utils.round_angle( mouse_angle ) 
 end
 
 -------------------------------------------------------------------------------

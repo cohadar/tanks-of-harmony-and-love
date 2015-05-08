@@ -3,7 +3,6 @@ local m_client = {}
 
 require "enet"
 m_tank = require "tank"
-m_tank_command = require "tank_command"
 m_utils = require "utils"
 m_world = require "world"
 m_history = require "history"
@@ -15,6 +14,8 @@ local server = nil
 local udp
 local connected = false
 local index_on_server = 0
+
+local g_tick = 0
 
 -------------------------------------------------------------------------------
 function m_client.is_connected()
@@ -41,6 +42,7 @@ local function tank_sync( msg )
 	local old_tank = m_history.get_tank( msg.client_tick )
 	if old_tank == nil then
 		m_text.print("nil_sync", msg.client_tick, msg.server_tick)
+		--print("nil_sync", msg.client_tick, msg.server_tick)
 		-- TODO: insted of resetting, replay modified from history
 		m_history.reset()
 		g_tick = msg.server_tick + 1
@@ -62,7 +64,8 @@ end
 
 -------------------------------------------------------------------------------
 function m_client.update( tank, tank_command )
-	if connected and tank_command.changed then
+	g_tick = g_tick + 1
+	if connected then
 		m_history.tank_record( g_tick, tank )
 		local datagram = m_utils.pack{ type = "tank_command", tank_command = tank_command, client_tick = g_tick }
     	server:send( datagram, 0, "unsequenced" )

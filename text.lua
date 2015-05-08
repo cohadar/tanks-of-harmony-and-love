@@ -21,7 +21,7 @@ function m_text.print( ... )
   		str = str .. tostring( e ) .. " "
 	end
 	last_floating = last_floating + 1
-	if last_floating > FLOAT_START_Y then
+	if last_floating > MAX_FLOATING then
 		last_floating = 1
 	end
 	if last_y > FLOAT_START_Y - 12 then
@@ -60,7 +60,7 @@ end
 -------------------------------------------------------------------------------
 function m_text.draw()
 	local max_y = 0
-	for i = 1, 100 do
+	for i = 1, MAX_FLOATING do
 		local ft = floating[ i ]
 		if ft then
 			ft.duration = ft.duration - 1
