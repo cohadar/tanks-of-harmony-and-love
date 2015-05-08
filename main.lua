@@ -57,19 +57,20 @@ end
 function love.update( dt )
 	m_gui.update( dt )
 	local mark = love.timer.getTime()
-	tank_command.repeat_count = 0
-	while m_ticker.tick( mark ) and tank_command.repeat_count < 10 do
-		tank_command.repeat_count = tank_command.repeat_count + 1
+	local count = 0
+	while m_ticker.tick( mark ) and count < 10 do
+		count = count + 1
 		local tank = m_world.get_tank( 0 )
+		tank_command.client_tick = m_client.incTick() 
 		m_tank.update( tank, tank_command )
 		m_world.update_tank( 0, tank )
-		m_history.tank_record( m_client.incTick(), tank )
+		m_history.tank_record( tank_command.client_tick, tank )
 	    m_bullets.update()
 	end
-	if tank_command.repeat_count > 0 then
+	if count > 0 then
 		m_client.update( tank, tank_command )
 	end
-	if tank_command.repeat_count == 10 then
+	if count > 9 then
 		-- TODO: proper disconnect here
 		error "you lag too much"
 	end

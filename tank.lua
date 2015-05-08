@@ -29,7 +29,7 @@ function m_tank.newCommand()
 		left = false,
 		right = false,
 		mouse_angle = 0.0,
-		repeat_count = 0
+		client_tick = 0
 	}
 end
 

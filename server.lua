@@ -12,7 +12,6 @@ require "love.timer"
 
 local tanks = {}
 local tank_commands = {}
-local client_ticks = {}
 
 -------------------------------------------------------------------------------
 local function on_connect( event ) 
@@ -21,7 +20,6 @@ local function on_connect( event )
     local gram = m_utils.pack{ type = "index", index = index }
     tanks[ index ] = m_tank.new()
     tank_commands[ index ] = m_tank.newCommand()
-    client_ticks[ index ] = 0
     event.peer:send( gram, 0,  "unsequenced" )
 end
 
@@ -39,32 +37,28 @@ local function on_receive( event, server_tick )
     msg = m_utils.unpack( event.data )
     if msg.type == "tank_command" then
         tank_commands[ event.peer:index() ] = msg.tank_command
-        client_ticks[ event.peer:index() ] = msg.client_tick
     else
         m_text.print( "ERROR: unknown msg.type", msg.type, event.data )
     end
 end
 
 -------------------------------------------------------------------------------
-local function on_update( server_tick )
+local function on_update()
     for index, tank in pairs( tanks ) do 
-        for i = 1, tank_commands[ index ].repeat_count do 
-            m_tank.update( tank, tank_commands[ index ] )
-            local client_tick = client_ticks[ index ] 
-            client_ticks[ index ] = client_ticks[ index ] + 1    
-        end
+        tank_command = tank_commands[ index ]
+        m_tank.update( tank, tank_command )
+        tank_command.client_tick = tank_command.client_tick + 1
     end    
 end
 
 -------------------------------------------------------------------------------
-function on_broadcast( host, server_tick )
+function on_broadcast( host )
     for index, tank in pairs( tanks ) do 
         local gram = m_utils.pack { 
             type = "tank", 
             index = index, 
             tank = tank, 
-            server_tick = server_tick, 
-            client_tick = client_ticks[ index ] 
+            client_tick = tank_commands[ index ].client_tick - 1
         } 
         host:broadcast( gram, 0, "unsequenced" ) 
     end
@@ -94,10 +88,10 @@ local function start_server( host, port )
         mark = love.timer.getTime()
         while m_ticker.tick( mark ) do
             tick = tick + 1
-            on_update( tick )
+            on_update()
             -- we broadcast 3 times slower than we update
             if tick % 3 == 0 then
-                on_broadcast( host, tick )
+                on_broadcast( host )
             end
         end
     end

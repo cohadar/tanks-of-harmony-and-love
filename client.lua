@@ -17,6 +17,12 @@ local index_on_server = 0
 
 local client_tick = 0
 
+
+-------------------------------------------------------------------------------
+function m_client.getTick()
+	return client_tick
+end
+
 -------------------------------------------------------------------------------
 function m_client.incTick()
 	client_tick = client_tick + 1
@@ -47,22 +53,18 @@ local function tank_sync( msg )
 	end
 	local old_tank = m_history.get_tank( msg.client_tick )
 	if old_tank == nil then
-		m_text.print("nil_sync", msg.client_tick, msg.server_tick, client_tick)
-		-- TODO: insted of resetting, replay modified from history
+		m_text.print( "nil_sync", client_tick, msg.client_tick )
 		m_history.reset()
-		client_tick = msg.server_tick + 1
 		m_world.update_tank( 0, msg.tank )
 		m_history.tank_record( msg.client_tick, msg.tank )
-		m_history.tank_record( client_tick, msg.tank )
+		client_tick = msg.client_tick
 	else		
 		if m_tank.neq( old_tank, msg.tank ) then
-			m_text.print("forced_sync", msg.client_tick, msg.server_tick)
-			-- TODO: insted of resetting, replay modified from history
+			m_text.print( "forced_sync", client_tick, msg.client_tick )
 			m_history.reset()
-			client_tick = msg.server_tick + 1
 			m_world.update_tank( 0, msg.tank )
 			m_history.tank_record( msg.client_tick, msg.tank )
-			m_history.tank_record( client_tick, msg.tank )
+			client_tick = msg.client_tick
 		end
 	end
 end
@@ -70,7 +72,7 @@ end
 -------------------------------------------------------------------------------
 function m_client.update( tank, tank_command )
 	if connected then
-		local datagram = m_utils.pack{ type = "tank_command", tank_command = tank_command, client_tick = client_tick }
+		local datagram = m_utils.pack{ type = "tank_command", tank_command = tank_command }
     	server:send( datagram, 0, "unsequenced" )
 	end
 	if not server then 
