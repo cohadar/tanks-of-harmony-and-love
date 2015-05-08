@@ -15,7 +15,12 @@ local udp
 local connected = false
 local index_on_server = 0
 
-local g_tick = 0
+local client_tick = 0
+
+-------------------------------------------------------------------------------
+function m_client.getTick()
+	return client_tick
+end
 
 -------------------------------------------------------------------------------
 function m_client.is_connected()
@@ -41,33 +46,32 @@ local function tank_sync( msg )
 	end
 	local old_tank = m_history.get_tank( msg.client_tick )
 	if old_tank == nil then
-		m_text.print("nil_sync", msg.client_tick, msg.server_tick)
-		--print("nil_sync", msg.client_tick, msg.server_tick)
+		m_text.print("nil_sync", msg.client_tick, msg.server_tick, client_tick)
+		print("nil_sync", msg.client_tick, msg.server_tick, client_tick)
 		-- TODO: insted of resetting, replay modified from history
 		m_history.reset()
-		g_tick = msg.server_tick + 1
+		client_tick = msg.server_tick + 1
 		m_world.update_tank( 0, msg.tank )
 		m_history.tank_record( msg.client_tick, msg.tank )
-		m_history.tank_record( g_tick, msg.tank )
+		m_history.tank_record( client_tick, msg.tank )
 	else		
 		if m_tank.neq( old_tank, msg.tank ) then
 			m_text.print("forced_sync", msg.client_tick, msg.server_tick)
 			-- TODO: insted of resetting, replay modified from history
 			m_history.reset()
-			g_tick = msg.server_tick + 1
+			client_tick = msg.server_tick + 1
 			m_world.update_tank( 0, msg.tank )
 			m_history.tank_record( msg.client_tick, msg.tank )
-			m_history.tank_record( g_tick, msg.tank )
+			m_history.tank_record( client_tick, msg.tank )
 		end
 	end
 end
 
 -------------------------------------------------------------------------------
 function m_client.update( tank, tank_command )
-	g_tick = g_tick + 1
+	client_tick = client_tick + tank_command.repeat_count
 	if connected then
-		m_history.tank_record( g_tick, tank )
-		local datagram = m_utils.pack{ type = "tank_command", tank_command = tank_command, client_tick = g_tick }
+		local datagram = m_utils.pack{ type = "tank_command", tank_command = tank_command, client_tick = client_tick }
     	server:send( datagram, 0, "unsequenced" )
 	end
 	if not server then 

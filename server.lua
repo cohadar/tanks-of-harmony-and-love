@@ -43,24 +43,32 @@ local function on_receive( event, server_tick )
 end
 
 -------------------------------------------------------------------------------
-local function on_update( host, server_tick )
+local function on_update( server_tick )
     for index, tank in pairs( tanks ) do 
         if tank_commands[ index ] ~= nil then
             m_tank.update( tank, tank_commands[ index ] )
         end        
-    end    
-    if server_tick % 3 == 0 then
-    for index, tank in pairs( tanks ) do 
         local client_tick = client_ticks[ index ] 
         if client_tick == nil then
             client_tick = server_tick
             client_ticks[ index ] = server_tick 
         else
             client_ticks[ index ] = client_ticks[ index ] + 1    
-        end
-        local gram = m_utils.pack { type = "tank", index = index, tank = tank, server_tick = server_tick, client_tick = client_tick } 
+        end        
+    end    
+end
+
+-------------------------------------------------------------------------------
+function on_broadcast( host, server_tick )
+    for index, tank in pairs( tanks ) do 
+        local gram = m_utils.pack { 
+            type = "tank", 
+            index = index, 
+            tank = tank, 
+            server_tick = server_tick, 
+            client_tick = client_ticks[ index ] 
+        } 
         host:broadcast( gram, 0, "unsequenced" ) 
-    end
     end
 end
 
@@ -88,7 +96,11 @@ local function start_server( host, port )
         mark = love.timer.getTime()
         while m_ticker.tick( mark ) do
             tick = tick + 1
-            on_update( host, tick )
+            on_update( tick )
+            -- we broadcast 3 times slower than we update
+            if tick % 3 == 0 then
+                on_broadcast( host, tick )
+            end
         end
     end
 end

@@ -70,6 +70,7 @@ function love.update( dt )
 		local tank = m_world.get_tank( 0 )
 		m_tank.update( tank, tank_command )
 		m_world.update_tank( 0, tank )
+		m_history.tank_record( m_client.getTick() + tank_command.repeat_count, tank )
 	    m_bullets.update()
 	end
 	if tank_command.repeat_count > 0 then
