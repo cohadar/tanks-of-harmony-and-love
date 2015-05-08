@@ -6,7 +6,7 @@
 -- sudo luarocks install enet
 -------------------------------------------------------------------------------
 require "enet"
-serpent = require "libs.serpent"
+m_utils = require "utils"
 m_tank = require "tank"
 m_text = require "text"
 
@@ -18,7 +18,7 @@ local FPS = 1 / 60
 -------------------------------------------------------------------------------
 local function on_connect( event ) 
     m_text.print( "connect", event.peer:index(), os.time() )
-    local gram = serpent.dump( { type = "index", index = event.peer:index() } ) 
+    local gram = m_utils.pack{ type = "index", index = event.peer:index() }
     tanks[ event.peer:index() ] = m_tank.new()
     event.peer:send( gram, 0,  "unsequenced" )
 end
@@ -27,27 +27,24 @@ end
 local function on_disconnect( host, event )
     m_text.print( "disconnect", event.peer:index() )
     tanks[ event.peer:index() ] = nil
-    local gram = serpent.dump( { type = "player_gone", index = event.peer:index() } )
+    local gram = m_utils.pack{ type = "player_gone", index = event.peer:index() } 
     host:broadcast( gram )
 end
 
 -------------------------------------------------------------------------------
 local function on_receive( event )
     t = os.time()
-    ok, msg = serpent.load( event.data )
-    if ok then
-        if msg.type == "tank_command" then
-            tank_commands[ event.peer:index() ] = msg.tank_command
-            client_ticks[ event.peer:index() ] = msg.client_tick
-        else
-            m_text.print( "ERROR: unknown msg.type", msg.type, event.data )
-        end
+    msg = m_utils.unpack( event.data )
+    if msg.type == "tank_command" then
+        tank_commands[ event.peer:index() ] = msg.tank_command
+        client_ticks[ event.peer:index() ] = msg.client_tick
+    else
+        m_text.print( "ERROR: unknown msg.type", msg.type, event.data )
     end
 end
 
 -------------------------------------------------------------------------------
 local function on_update( host, server_tick )
-    --print( "update", serpent.dump(tanks) )
     for index, tank in pairs( tanks ) do 
         if tank_commands[ index ] ~= nil then
             m_tank.update( tank, tank_commands[ index ] )
@@ -63,7 +60,7 @@ local function on_update( host, server_tick )
         else
             client_ticks[ index ] = client_ticks[ index ] + 1    
         end
-        local gram = serpent.dump( { type = "tank", index = index, tank = tank, server_tick = server_tick, client_tick = client_tick } )
+        local gram = m_utils.pack { type = "tank", index = index, tank = tank, server_tick = server_tick, client_tick = client_tick } 
         host:broadcast( gram, 0, "unsequenced" ) 
     end
     end

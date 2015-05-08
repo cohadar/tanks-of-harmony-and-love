@@ -1,6 +1,8 @@
 --- @module utils
 local m_utils = {}
 
+local smallfolk = require "libs.smallfolk"
+
 -------------------------------------------------------------------------------
 function m_utils.deepcopy( orig )
     local copy = orig
@@ -24,6 +26,13 @@ end
 function m_utils.round_angle( num )
   return math.floor( num * 1000000 + 0.5 ) / 1000000
 end
+
+-------------------------------------------------------------------------------
+m_utils.pack = smallfolk.dumps
+
+-------------------------------------------------------------------------------
+m_utils.unpack = smallfolk.loads
+
 
 -------------------------------------------------------------------------------
 return m_utils

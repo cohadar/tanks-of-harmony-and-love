@@ -22,7 +22,6 @@ m_tank = require "tank"
 m_tank_command = require "tank_command"
 m_client = require "client"
 m_tests = require "tests"
-serpent = require "libs.serpent"
 
 m_world = require "world"
 local tank_command = m_tank_command.new()

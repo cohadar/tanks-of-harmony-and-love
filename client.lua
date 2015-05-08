@@ -1,7 +1,6 @@
 --- @module client
 local m_client = {}
 
-require "libs.serpent"
 require "enet"
 m_tank = require "tank"
 m_tank_command = require "tank_command"
@@ -65,8 +64,7 @@ end
 function m_client.update( tank, tank_command )
 	if connected then
 		m_history.tank_record( g_tick, tank )
-		--print("rec_tank", g_tick, serpent.line(tank))
-		local datagram = serpent.dump( { type = "tank_command", tank_command = tank_command, client_tick = g_tick } )
+		local datagram = m_utils.pack{ type = "tank_command", tank_command = tank_command, client_tick = g_tick }
     	server:send( datagram, 0, "unsequenced" )
 	end
 	if not server then 
@@ -79,26 +77,24 @@ function m_client.update( tank, tank_command )
 				m_text.status( "Connected to", event.peer )
 			elseif event.type == "receive" then
 				-- print( "Got message: ", event.data, event.peer )
-				local ok, msg = serpent.load( event.data )
-				if ok then
-					if msg.type == "tank" then 
-						if index_on_server == msg.index then
-							tank_sync( msg )
-						else
-							m_world.update_tank( msg.index, msg.tank )
-						end
-					elseif msg.type == "index" then
-						index_on_server = msg.index
-						love.window.setTitle( "Connected as Player #" .. index_on_server )
-						connected = true
-						m_world.connect( index_on_server )
-						m_text.print( "index on server: ", index_on_server )
-					elseif msg.type == "player_gone" then
-						m_world.player_gone( msg.index )
-						-- TODO: display disconnected tanks in gray for a short time
+				local msg = m_utils.unpack( event.data )
+				if msg.type == "tank" then 
+					if index_on_server == msg.index then
+						tank_sync( msg )
 					else
-						m_text.print("ERROR: unknown msg.type: ", msg.type, event.data )
+						m_world.update_tank( msg.index, msg.tank )
 					end
+				elseif msg.type == "index" then
+					index_on_server = msg.index
+					love.window.setTitle( "Connected as Player #" .. index_on_server )
+					connected = true
+					m_world.connect( index_on_server )
+					m_text.print( "index on server: ", index_on_server )
+				elseif msg.type == "player_gone" then
+					m_world.player_gone( msg.index )
+					-- TODO: display disconnected tanks in gray for a short time
+				else
+					m_text.print("ERROR: unknown msg.type: ", msg.type, event.data )
 				end
 			elseif event.type == "disconnect" then
 				m_text.status( "disconnect" )
