@@ -3,22 +3,20 @@ local m_main = {}
 
 io.stdout:setvbuf("no")
 
-m_gui = require "gui"
-m_quickie = require "libs.quickie"
-m_terrain = require "terrain"
-m_tank = require "tank"
-m_client = require "client"
-m_tests = require "tests"
-m_world = require "world"
-m_bullets = require "bullets"
-m_ticker = require "ticker"
+local m_gui = require "gui"
+local m_quickie = require "libs.quickie"
+local m_terrain = require "terrain"
+local m_tank = require "tank"
+local m_client = require "client"
+local m_tests = require "tests"
+local m_world = require "world"
+local m_bullets = require "bullets"
+local m_ticker = require "ticker"
 
-local tank_command = m_tank.newCommand()
+local _tankCommand = m_tank.newCommand()
 
 -------------------------------------------------------------------------------
 function love.load()
--- client.lua
-
 	m_conf.SCREEN_WIDTH  = love.graphics.getWidth() 
 	m_conf.SCREEN_HEIGHT = love.graphics.getHeight() 
 	m_conf.SCREEN_WIDTH_HALF  = math.floor( m_conf.SCREEN_WIDTH / 2 )
@@ -33,10 +31,8 @@ function love.load()
 	end
 
 	love.mouse.setVisible( true )
-
-	g_tank_base = love.graphics.newImage( "resources/base.png" )
-	g_tank_turret = love.graphics.newImage( "resources/turret.png" )
 	m_text.init()
+	m_tank.init()
 	m_terrain.init()
 	m_client.init()
 	m_tests.run_all()
@@ -53,14 +49,14 @@ function love.update( dt )
 	while m_ticker.tick( mark ) and count < 10 do
 		count = count + 1
 		local tank = m_world.get_tank( 0 )
-		tank_command.client_tick = m_client.incTick() 
-		m_tank.update( tank, tank_command )
+		_tankCommand.client_tick = m_client.incTick() 
+		m_tank.update( tank, _tankCommand )
 		m_world.update_tank( 0, tank )
-		m_history.tank_record( tank_command.client_tick, tank )
+		m_history.tank_record( _tankCommand.client_tick, tank )
 	    m_bullets.update()
 	end
 	if count > 0 then
-		m_client.update( tank, tank_command )
+		m_client.update( tank, _tankCommand )
 	end
 	if count > 9 then
 		-- TODO: proper disconnect here
@@ -104,13 +100,13 @@ function love.keypressed( key, unicode )
 	-- 	return
 	-- end
 	if key     == "up"    or key == "w" then
-		tank_command.up = true
+		_tankCommand.up = true
 	elseif key == "down"  or key == "s" then
-		tank_command.down = true
+		_tankCommand.down = true
 	elseif key == "left"  or key == "a" then
-		tank_command.left = true
+		_tankCommand.left = true
 	elseif key == "right" or key == "d" then
-		tank_command.right = true
+		_tankCommand.right = true
 	end
 
     m_quickie.keyboard.pressed( key )
@@ -119,15 +115,15 @@ end
 -------------------------------------------------------------------------------
 function love.keyreleased( key )
 	if key     == "up"    or key == "w" then
-		tank_command.up = false
+		_tankCommand.up = false
 	elseif key == "down"  or key == "s" then
-		tank_command.down = false
+		_tankCommand.down = false
 	elseif key == "left"  or key == "a" then
-		tank_command.left = false
+		_tankCommand.left = false
 	elseif key == "right" or key == "d" then
-		tank_command.right = false
+		_tankCommand.right = false
 	elseif key == " " then
-		tank_command.fire = true
+		_tankCommand.fire = true
 	end
 
     m_gui.keyreleased( key )
@@ -135,7 +131,7 @@ end
 
 -------------------------------------------------------------------------------
 function love.mousereleased( x, y, button )
-	tank_command.fire = true
+	_tankCommand.fire = true
 end
 
 -------------------------------------------------------------------------------
@@ -149,7 +145,7 @@ function love.mousemoved( mouse_x, mouse_y, dx, dy )
 		mouse_y - m_conf.SCREEN_HEIGHT_HALF * m_conf.SCALE_GRAPHICS, 
 		mouse_x - m_conf.SCREEN_WIDTH_HALF  * m_conf.SCALE_GRAPHICS 
 	)
-	tank_command.mouse_angle = m_utils.round_angle( mouse_angle ) 
+	_tankCommand.mouse_angle = m_utils.round_angle( mouse_angle ) 
 end
 
 -------------------------------------------------------------------------------

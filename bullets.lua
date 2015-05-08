@@ -3,8 +3,6 @@ local m_bullets = {}
 
 m_terrain = require "terrain"
 
-local img_bullet = nil
-
 local BULLET_SPEED = 30
 
 local MAX_BULLETS = 100
@@ -14,6 +12,8 @@ local bullets = {}
 -- image center of gravity
 local GRAVITY_CENTER_X = 83 - 4.5
 local GRAVITY_CENTER_Y = 4.5
+
+local img_bullet = nil
 
 -------------------------------------------------------------------------------
 function m_bullets.init()

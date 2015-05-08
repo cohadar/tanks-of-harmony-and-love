@@ -23,6 +23,15 @@ local TANK_INERTION_VELOCITY_DELTA = TANK_VELOCITY_DELTA * 1.5
 local TANK_ANGLE_VELOCITY = math.pi / 128 * 2
 local TURRET_ANGLE_VELOCITY = math.pi / 64 * 2
 
+local img_tank_base = nil
+local img_tank_turret = nil
+
+-------------------------------------------------------------------------------
+function m_tank.init()
+	img_tank_base = love.graphics.newImage( "resources/base.png" )
+	img_tank_turret = love.graphics.newImage( "resources/turret.png" )
+end
+
 -------------------------------------------------------------------------------
 function m_tank.newCommand()
 	return {
@@ -184,8 +193,8 @@ end
 function m_tank.draw( self )
 	local turret_x, turret_y = m_tank.turretXY( self )
 	--local muzzle_x, muzzle_y = m_tank.muzzleXY( self, turret_x, turret_y )
-	love.graphics.draw( g_tank_base, self.x, self.y, self.angle, 1.0, 1.0, BASE_CENTER_X, BASE_CENTER_Y )
-	love.graphics.draw( g_tank_turret, turret_x, turret_y, self.turret_angle, 1.0, 1.0, TURRET_CENTER_X, TURRET_CENTER_Y )
+	love.graphics.draw( img_tank_base, self.x, self.y, self.angle, 1.0, 1.0, BASE_CENTER_X, BASE_CENTER_Y )
+	love.graphics.draw( img_tank_turret, turret_x, turret_y, self.turret_angle, 1.0, 1.0, TURRET_CENTER_X, TURRET_CENTER_Y )
 	--love.graphics.circle( "fill", muzzle_x, muzzle_y, 10 )
 end
 
