@@ -1,20 +1,11 @@
 --- @module tank
-local m_tank = {}
+local tank = {}
 
-local m_terrain = require "terrain"
-local m_utils = require "utils"
-local m_bullets = require "bullets"
+local terrain = require "terrain"
+local utils = require "utils"
+local bullets = require "bullets"
 
--- drawing properties 
-local TURRET_CENTER_X = 21.0
-local TURRET_CENTER_Y = 28.0
-local TURRET_BASE_OFFSET = 10
-local BASE_CENTER_X = 64
-local BASE_CENTER_Y = 38
-local MUZZLE_LENGTH = 120
-local MUZZLE_SHIFT = -9
-
--- gameplay properties
+-- gameplay constants
 local FPS = 32
 local TANK_VELOCITY_MAX = 4.0 * 2
 local TANK_VELOCITY_DELTA = TANK_VELOCITY_MAX / FPS / 2
@@ -23,17 +14,27 @@ local TANK_INERTION_VELOCITY_DELTA = TANK_VELOCITY_DELTA * 1.5
 local TANK_ANGLE_VELOCITY = math.pi / 128 * 2
 local TURRET_ANGLE_VELOCITY = math.pi / 64 * 2
 
-local img_tank_base = nil
-local img_tank_turret = nil
+-- drawing constants
+local IMG_TANK_BASE = nil
+local IMG_TANK_BASE_CX = 64
+local IMG_TANK_BASE_CY = 38
+
+local IMG_TANK_TURRET = nil
+local IMG_TANK_TURRET_CX = 21.0
+local IMG_TANK_TURRET_CY = 28.0
+
+local TURRET_BASE_OFFSET = 10
+local MUZZLE_LENGTH = 120
+local MUZZLE_SHIFT = -9
 
 -------------------------------------------------------------------------------
-function m_tank.init()
-	img_tank_base = love.graphics.newImage( "resources/base.png" )
-	img_tank_turret = love.graphics.newImage( "resources/turret.png" )
+function tank.init()
+	IMG_TANK_BASE = love.graphics.newImage( "resources/base.png" )
+	IMG_TANK_TURRET = love.graphics.newImage( "resources/turret.png" )
 end
 
 -------------------------------------------------------------------------------
-function m_tank.newCommand()
+function tank.newCommand()
 	return {
 		up = false,
 		down = false,
@@ -45,7 +46,7 @@ function m_tank.newCommand()
 end
 
 -------------------------------------------------------------------------------
-function m_tank.new()
+function tank.new()
 	local self = {}
 	self.x = 256.0
 	self.y = 256.0
@@ -57,7 +58,7 @@ function m_tank.new()
 end
 
 -------------------------------------------------------------------------------
-function m_tank.slurp( self, other )
+function tank.slurp( self, other )
 	self.x = other.x
 	self.y = other.y 
 	self.angle = other.angle 
@@ -67,7 +68,7 @@ function m_tank.slurp( self, other )
 end
 
 -------------------------------------------------------------------------------
-function m_tank.neq( a, b )
+function tank.neq( a, b )
 	if a.x ~= b.x then
 		return true
 	end
@@ -84,120 +85,111 @@ function m_tank.neq( a, b )
 end
 
 -------------------------------------------------------------------------------
-function m_tank.getX( self )
-	return self.x
+local function calcVelocity( velocity, up, down )
+	if up then
+		if velocity < 0 then
+			velocity = velocity + TANK_BREAKING_VELOCITY_DELTA
+		else 
+			velocity = velocity + TANK_VELOCITY_DELTA
+		end
+		if velocity > TANK_VELOCITY_MAX then
+			velocity = TANK_VELOCITY_MAX
+		end
+	end
+	if down and not up then
+		if velocity > 0 then
+			velocity = velocity - TANK_BREAKING_VELOCITY_DELTA
+		else 
+			velocity = velocity - TANK_VELOCITY_DELTA
+		end
+		if velocity < -TANK_VELOCITY_MAX then
+			velocity = -TANK_VELOCITY_MAX
+		end
+	end
+	if not up and not down then
+		if math.abs(velocity) < TANK_INERTION_VELOCITY_DELTA then
+			velocity = 0
+		elseif velocity > 0 then
+			velocity = velocity - TANK_INERTION_VELOCITY_DELTA
+		else
+			velocity = velocity + TANK_INERTION_VELOCITY_DELTA
+		end
+	end
+	return velocity
 end
 
 -------------------------------------------------------------------------------
-function m_tank.getY( self )
-	return self.y
+local function calcAngleVelocity( angle_velocity, left, right )
+	angle_velocity = 0
+	if left and not right then
+		angle_velocity = -TANK_ANGLE_VELOCITY
+	end
+	if right and not left then
+		angle_velocity = TANK_ANGLE_VELOCITY
+	end			
+	return angle_velocity
 end
 
 -------------------------------------------------------------------------------
-function m_tank.setXY( self, x, y )
-	self.x = m_terrain.safe_x( x )
-	self.y = m_terrain.safe_y( y )
-end
-
--------------------------------------------------------------------------------
-function m_tank.update( self, tank_command )
-
-	-- update position
-	self.x = self.x + self.velocity * math.cos( self.angle )
-	self.y = self.y + self.velocity * math.sin( self.angle )
-	self.x, self.y = m_terrain.safeXY( self.x, self.y )
-	m_terrain.camera_x = self.x
-	m_terrain.camera_y = self.y
-	self.angle = m_utils.round_angle( self.angle + self.angle_velocity )
-
-	-- update turret angle
-	local mouse_angle = tank_command.mouse_angle
-	self.turret_angle = math.atan2( math.sin( self.turret_angle ), math.cos( self.turret_angle ) )
-	
-	if math.abs(mouse_angle - self.turret_angle) < 0.1 then
-		self.turret_angle = mouse_angle
+local function calcTurretAngle( turret_angle, mouse_angle )
+	if math.abs( mouse_angle - turret_angle ) < TURRET_ANGLE_VELOCITY then
+		turret_angle = mouse_angle
 	else
-		mouse_angle = mouse_angle + math.pi
-		local angle_diff = mouse_angle - self.turret_angle
-		angle_diff = math.atan2(math.sin(angle_diff), math.cos(angle_diff))
+		local angle_diff = utils.cleanAngle( mouse_angle + math.pi - turret_angle )
 		if angle_diff < 0 then
-			self.turret_angle = self.turret_angle + TURRET_ANGLE_VELOCITY
+			turret_angle = turret_angle + TURRET_ANGLE_VELOCITY
 		end
 		if angle_diff > 0 then
-			self.turret_angle = self.turret_angle - TURRET_ANGLE_VELOCITY
+			turret_angle = turret_angle - TURRET_ANGLE_VELOCITY
 		end	
 	end
-	self.turret_angle = m_utils.round_angle( self.turret_angle )
-	if tank_command.fire then
-		tank_command.fire = false
-		local turret_x, turret_y = m_tank.turretXY( self )
-		local muzzle_x, muzzle_y = m_tank.muzzleXY( self, turret_x, turret_y )
-		m_bullets.fire( muzzle_x, muzzle_y, self.turret_angle )
-	end
-
-	-- update velocities
-	if tank_command.up then
-		if self.velocity < 0 then
-			self.velocity = self.velocity + TANK_BREAKING_VELOCITY_DELTA
-		else 
-			self.velocity = self.velocity + TANK_VELOCITY_DELTA
-		end
-		if self.velocity > TANK_VELOCITY_MAX then
-			self.velocity = TANK_VELOCITY_MAX
-		end
-	end
-	if tank_command.down and not tank_command.up then
-		if self.velocity > 0 then
-			self.velocity = self.velocity - TANK_BREAKING_VELOCITY_DELTA
-		else 
-			self.velocity = self.velocity - TANK_VELOCITY_DELTA
-		end
-		if self.velocity < -TANK_VELOCITY_MAX then
-			self.velocity = -TANK_VELOCITY_MAX
-		end
-	end
-	if not tank_command.up and not tank_command.down then
-		if math.abs(self.velocity) < TANK_INERTION_VELOCITY_DELTA then
-			self.velocity = 0
-		elseif self.velocity > 0 then
-			self.velocity = self.velocity - TANK_INERTION_VELOCITY_DELTA
-		else
-			self.velocity = self.velocity + TANK_INERTION_VELOCITY_DELTA
-		end
-	end
-	self.angle_velocity = 0
-	if tank_command.left and not tank_command.right then
-		self.angle_velocity = -TANK_ANGLE_VELOCITY
-	end
-	if tank_command.right and not tank_command.left then
-		self.angle_velocity = TANK_ANGLE_VELOCITY
-	end	
+	return utils.cleanAngle( turret_angle )	
 end
 
 -------------------------------------------------------------------------------
-function m_tank.turretXY( self )
-	local turret_x = self.x + TURRET_BASE_OFFSET * math.cos( self.angle )
-	local turret_y = self.y + TURRET_BASE_OFFSET * math.sin( self.angle )
+local function calcTurretXY( x, y, angle )
+	local turret_x = x + TURRET_BASE_OFFSET * math.cos( angle )
+	local turret_y = y + TURRET_BASE_OFFSET * math.sin( angle )
 	return turret_x, turret_y
 end
 
 -------------------------------------------------------------------------------
-function m_tank.muzzleXY( self, turret_x, turret_y )
-	local muzzle_x = turret_x + MUZZLE_LENGTH * math.cos( self.turret_angle )
-	local muzzle_y = turret_y + MUZZLE_LENGTH * math.sin( self.turret_angle )
-	muzzle_x = muzzle_x + MUZZLE_SHIFT * math.cos( math.pi / 2 + self.turret_angle )
-	muzzle_y = muzzle_y + MUZZLE_SHIFT * math.sin( math.pi / 2 + self.turret_angle )
+function calcMuzzleXY( turret_x, turret_y, turret_angle )
+	local muzzle_x = turret_x + MUZZLE_LENGTH * math.cos( turret_angle )
+	local muzzle_y = turret_y + MUZZLE_LENGTH * math.sin( turret_angle )
+	muzzle_x = muzzle_x + MUZZLE_SHIFT * math.cos( math.pi / 2 + turret_angle )
+	muzzle_y = muzzle_y + MUZZLE_SHIFT * math.sin( math.pi / 2 + turret_angle )
 	return muzzle_x, muzzle_y
 end
 
 -------------------------------------------------------------------------------
-function m_tank.draw( self )
-	local turret_x, turret_y = m_tank.turretXY( self )
-	--local muzzle_x, muzzle_y = m_tank.muzzleXY( self, turret_x, turret_y )
-	love.graphics.draw( img_tank_base, self.x, self.y, self.angle, 1.0, 1.0, BASE_CENTER_X, BASE_CENTER_Y )
-	love.graphics.draw( img_tank_turret, turret_x, turret_y, self.turret_angle, 1.0, 1.0, TURRET_CENTER_X, TURRET_CENTER_Y )
-	--love.graphics.circle( "fill", muzzle_x, muzzle_y, 10 )
+function tank.update( self, tank_command )
+	-- update position
+	self.x = self.x + self.velocity * math.cos( self.angle )
+	self.y = self.y + self.velocity * math.sin( self.angle )
+	self.x, self.y = terrain.safeXY( self.x, self.y )
+	-- update angle
+	self.angle = utils.cleanAngle( self.angle + self.angle_velocity )
+	-- update turret angle
+	self.turret_angle = calcTurretAngle( self.turret_angle, tank_command.mouse_angle )
+	-- fire?
+	if tank_command.fire then
+		tank_command.fire = false
+		local turret_x, turret_y = calcTurretXY( self.x, self.y, self.angle )
+		local muzzle_x, muzzle_y = calcMuzzleXY( turret_x, turret_y, self.turret_angle )
+		bullets.fire( muzzle_x, muzzle_y, self.turret_angle )
+	end
+	-- update velocities
+	self.velocity = calcVelocity( self.velocity, tank_command.up, tank_command.down )
+	self.angle_velocity = calcAngleVelocity( self.angle_velocity, tank_command.left, tank_command.right )
 end
 
 -------------------------------------------------------------------------------
-return m_tank
+function tank.draw( self )
+	local turret_x, turret_y = calcTurretXY( self.x, self.y, self.angle )
+	love.graphics.draw( IMG_TANK_BASE, self.x, self.y, self.angle, 1.0, 1.0, IMG_TANK_BASE_CX, IMG_TANK_BASE_CY )
+	love.graphics.draw( IMG_TANK_TURRET, turret_x, turret_y, self.turret_angle, 1.0, 1.0, IMG_TANK_TURRET_CX, IMG_TANK_TURRET_CY )
+end
+
+-------------------------------------------------------------------------------
+return tank

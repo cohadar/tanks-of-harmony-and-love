@@ -44,5 +44,6 @@ Currently in development. ETA: 7 days.
   * perfected netcode 
   
 ### day9 goal: basic collision detection
+  * major code cleanup
 
 

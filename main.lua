@@ -52,6 +52,7 @@ function love.update( dt )
 		local localhost_tank = world.getTank( 0 )
 		_tankCommand.client_tick = client.incTick() 
 		tank.update( localhost_tank, _tankCommand )
+		terrain.camera_x, terrain.camera_y = localhost_tank.x, localhost_tank.y
 		world.updateTank( 0, localhost_tank )
 		history.set( _tankCommand.client_tick, localhost_tank )
 	    bullets.update()
@@ -139,7 +140,7 @@ function love.mousemoved( mouse_x, mouse_y, dx, dy )
 		mouse_y - conf.SCREEN_HEIGHT_HALF * conf.SCALE_GRAPHICS, 
 		mouse_x - conf.SCREEN_WIDTH_HALF  * conf.SCALE_GRAPHICS 
 	)
-	_tankCommand.mouse_angle = utils.round_angle( mouse_angle ) 
+	_tankCommand.mouse_angle = utils.cleanAngle( mouse_angle ) 
 end
 
 -------------------------------------------------------------------------------

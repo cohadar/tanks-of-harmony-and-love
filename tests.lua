@@ -6,6 +6,17 @@ local utils = require "utils"
 local history = require "history"
 local smallfolk = require "libs.smallfolk"
 
+local Njak = {}
+function Njak.new()
+	local self = { x = 0, y = 0 }
+	return self
+end
+
+function Njak:move( x, y )
+	self.x = x
+	self.y = y
+end
+
 -------------------------------------------------------------------------------
 function tests.runAll()
 	local tank_a = tank.new()

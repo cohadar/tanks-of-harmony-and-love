@@ -26,9 +26,11 @@ end
 -------------------------------------------------------------------------------
 -- we round up the angles because we don't really need all extra precision
 -- and rounded angles are much easier synchronized in multiplayer
+-- this function also normalizes angle to -math.pi .. +math.pi
 -------------------------------------------------------------------------------
-function utils.round_angle( num )
-  return math.floor( num * 0x10000 + 0.5 ) / 0x10000
+function utils.cleanAngle( angle )
+	angle = math.atan2( math.sin( angle ), math.cos( angle ) )
+  	return math.floor( angle * 0x10000 + 0.5 ) / 0x10000
 end
 
 -------------------------------------------------------------------------------
