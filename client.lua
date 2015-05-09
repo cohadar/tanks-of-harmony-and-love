@@ -9,6 +9,7 @@ local utils = require "utils"
 local world = require "world"
 local history = require "history"
 local text = require "text"
+local effects = require "effects"
 
 local _host = nil
 local _server = nil
@@ -89,6 +90,9 @@ function client.update( tank_command )
 						world.updateTank( msg.index, msg.tank )
 					end
 					bullets.importTable( msg.bullets_table )
+					if msg.tank.hit_x and msg.tank.hit_y then
+						effects.addExplosion( msg.tank.hit_x, msg.tank.hit_y, 0.2 )
+					end
 				elseif msg.type == "index" then
 					_indexOnServer = msg.index
 					_connected = true

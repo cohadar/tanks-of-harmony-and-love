@@ -72,5 +72,17 @@ function bullets.draw()
 end
 
 -------------------------------------------------------------------------------
+function bullets.collider( x, y, radius )
+	for index, self in pairs( _bullets ) do
+		local dx = self.x - x
+		local dy = self.y - y
+		if dx * dx + dy * dy < radius * radius then
+			return self.x, self.y
+		end
+	end
+	return nil, nil	
+end
+
+-------------------------------------------------------------------------------
 return bullets
 

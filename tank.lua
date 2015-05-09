@@ -24,6 +24,8 @@ local IMG_TANK_TURRET = nil
 local IMG_TANK_TURRET_CX = 21.0
 local IMG_TANK_TURRET_CY = 28.0
 local IMG_TANK_RADIUS = 70
+-- export
+tank.IMG_TANK_RADIUS = IMG_TANK_RADIUS
 
 local TURRET_BASE_OFFSET = 10
 local MUZZLE_LENGTH = 120
@@ -195,6 +197,12 @@ function tank.draw( self )
 	if conf.GAME_DEBUG then
 		love.graphics.circle( "line", self.x, self.y, IMG_TANK_RADIUS )
 	end
+end
+
+-------------------------------------------------------------------------------
+function tank.confirmHit( tnk, x, y )
+	-- TODO: precise hit calculation based on tank angle
+	return true
 end
 
 -------------------------------------------------------------------------------
