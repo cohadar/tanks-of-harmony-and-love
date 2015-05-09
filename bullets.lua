@@ -1,60 +1,56 @@
 --- @module bullet
-local m_bullets = {}
-
-m_terrain = require "terrain"
-
-local BULLET_SPEED = 30
-
-local MAX_BULLETS = 100
-local last_bullet = 0
 local bullets = {}
 
--- image center of gravity
-local GRAVITY_CENTER_X = 83 - 4.5
-local GRAVITY_CENTER_Y = 4.5
+terrain = require "terrain"
 
-local img_bullet = nil
+local IMG_BULLET = nil
+local IMG_BULLET_CX = 83 - 4.5
+local IMG_BULLET_CY = 4.5
+
+local BULLET_SPEED = 30
+local MAX__bullets = 100
+
+local _lastBullet = 0
+local _bullets = {}
 
 -------------------------------------------------------------------------------
-function m_bullets.init()
-	img_bullet = love.graphics.newImage "resources/bullet.png"
+function bullets.init()
+	IMG_BULLET = love.graphics.newImage "resources/bullet.png"
 end
 
 -------------------------------------------------------------------------------
-function m_bullets.fire( x, y, direction )
+function bullets.fire( x, y, direction )
 	local self = {}
 	self.x = x
 	self.y = y
 	self.dx = BULLET_SPEED * math.cos( direction )
 	self.dy = BULLET_SPEED * math.sin( direction )
 	self.angle = direction
-	last_bullet = last_bullet + 1
-	if last_bullet > MAX_BULLETS then
-		last_bullet = 1
+	_lastBullet = _lastBullet + 1
+	if _lastBullet > MAX__bullets then
+		_lastBullet = 1
 	end
-	bullets[ last_bullet ] = self
+	_bullets[ _lastBullet ] = self
 end
 
 -------------------------------------------------------------------------------
--- explicitly NOT a function of dt
--------------------------------------------------------------------------------
-function m_bullets.update()
-	for index, self in pairs( bullets ) do
+function bullets.update()
+	for index, self in pairs( _bullets ) do
 		self.x = self.x + self.dx
 		self.y = self.y + self.dy
-		if m_terrain.is_inside( self.x, self.y, -3 * MAP_SQUARE )  == false then
-			bullets[ index ] = nil
+		if terrain.is_inside( self.x, self.y, -3 * MAP_SQUARE )  == false then
+			_bullets[ index ] = nil
 		end	
 	end
 end
 
 -------------------------------------------------------------------------------
-function m_bullets.draw()
-	for index, self in pairs( bullets ) do
-		love.graphics.draw( img_bullet, self.x, self.y, self.angle, 1.0, 1.0, GRAVITY_CENTER_X, GRAVITY_CENTER_Y )
+function bullets.draw()
+	for index, self in pairs( _bullets ) do
+		love.graphics.draw( IMG_BULLET, self.x, self.y, self.angle, 1.0, 1.0, IMG_BULLET_CX, IMG_BULLET_CY )
 	end
 end
 
 -------------------------------------------------------------------------------
-return m_bullets
+return bullets
 
