@@ -7,6 +7,7 @@ require "enet"
 require "love.timer"
 utils = require "utils"
 tank = require "tank"
+bullets = require "bullets"
 text = require "text"
 ticker = require "ticker"
 
@@ -49,15 +50,17 @@ local function onUpdate()
         tank.update( tnk, tank_command )
         tank_command.client_tick = tank_command.client_tick + 1
     end    
+    bullets.update()
 end
 
 -------------------------------------------------------------------------------
 local function onBroadcast( host )
     for index, tnk in pairs( _tanks ) do 
         local gram = utils.pack { 
-            type = "tank", 
+            type = "broadcast", 
             index = index, 
             tank = tnk, 
+            bullets_table = bullets.exportTable(),
             client_tick = _tankCommands[ index ].client_tick - 1
         } 
         host:broadcast( gram, 0, "unsequenced" ) 

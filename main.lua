@@ -59,6 +59,7 @@ function love.update( dt )
 	end
 	if count > 0 then
 		client.update( _tankCommand )
+		_tankCommand.fire = false
 	end
 	if count > 9 then
 		-- TODO: proper disconnect here

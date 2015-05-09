@@ -4,6 +4,7 @@ local client = {}
 require "enet"
 local conf = require "conf"
 local tank = require "tank"
+local bullets = require "bullets"
 local utils = require "utils"
 local world = require "world"
 local history = require "history"
@@ -81,12 +82,13 @@ function client.update( tank_command )
 				text.status( "Connected to", event.peer )
 			elseif event.type == "receive" then
 				local msg = utils.unpack( event.data )
-				if msg.type == "tank" then 
+				if msg.type == "broadcast" then 
 					if _indexOnServer == msg.index then
 						tank_sync( msg )
 					else
-						world.update_tank( msg.index, msg.tank )
+						world.updateTank( msg.index, msg.tank )
 					end
+					bullets.importTable( msg.bullets_table )
 				elseif msg.type == "index" then
 					_indexOnServer = msg.index
 					_connected = true
@@ -94,7 +96,7 @@ function client.update( tank_command )
 					love.window.setTitle( "Connected as Player #" .. _indexOnServer )
 					text.print( "index on server: ", _indexOnServer )
 				elseif msg.type == "player_gone" then
-					world.player_gone( msg.index )
+					world.playerGone( msg.index )
 					-- TODO: display disconnected tanks in gray for a short time
 				else
 					text.print("ERROR: unknown msg.type: ", msg.type, event.data )

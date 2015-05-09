@@ -41,6 +41,7 @@ function tank.newCommand()
 		left = false,
 		right = false,
 		mouse_angle = 0.0,
+		fire = false,
 		client_tick = 0
 	}
 end
@@ -174,7 +175,6 @@ function tank.update( self, tank_command )
 	self.turret_angle = calcTurretAngle( self.turret_angle, tank_command.mouse_angle )
 	-- fire?
 	if tank_command.fire then
-		tank_command.fire = false
 		local turret_x, turret_y = calcTurretXY( self.x, self.y, self.angle )
 		local muzzle_x, muzzle_y = calcMuzzleXY( turret_x, turret_y, self.turret_angle )
 		bullets.fire( muzzle_x, muzzle_y, self.turret_angle )

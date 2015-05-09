@@ -1,37 +1,33 @@
 --- @module tests
 local tests = {}
 
-local tank = require "tank"
 local utils = require "utils"
-local history = require "history"
-local smallfolk = require "libs.smallfolk"
+local bullets = require "bullets"
 
-local Njak = {}
-function Njak.new()
-	local self = { x = 0, y = 0 }
-	return self
+-------------------------------------------------------------------------------
+local function testSerialization()
+	local text = utils.pack( { pi = math.pi } )
+	t =  utils.unpack( text )
+	assert( math.pi == t.pi )
+
 end
 
-function Njak:move( x, y )
-	self.x = x
-	self.y = y
+-------------------------------------------------------------------------------
+local function testBullets()
+	bullets.fire( 1, 2, 3.3 )
+	bullets.fire( 1, 2, 4.4 )
+	local package = utils.pack( bullets.exportTable() )
+	print( package )
+	msg = utils.unpack( package )
+	print( utils.pack( msg ) )
+	bullets.importTable( msg )
+	print( utils.pack( bullets.exportTable() ) )
 end
 
 -------------------------------------------------------------------------------
 function tests.runAll()
-	local tank_a = tank.new()
-
-	local text = string.format("%1.16e", math.pi)
-	local pi1 = tonumber( text )
-	assert( math.pi == pi1 )
-
-	local text = string.format("%.17g", math.pi)
-	local pi = tonumber( text )
-	assert( math.pi == pi )
-
-	local text = smallfolk.dumps( { pi = math.pi } )
-	t =  smallfolk.loads( text )
-	assert( math.pi == t.pi )
+	testSerialization()
+	testBullets()
 end
 
 -------------------------------------------------------------------------------
