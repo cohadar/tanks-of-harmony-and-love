@@ -38,7 +38,7 @@ function bullets.update()
 	for index, self in pairs( _bullets ) do
 		self.x = self.x + self.dx
 		self.y = self.y + self.dy
-		if terrain.is_inside( self.x, self.y, -3 * MAP_SQUARE )  == false then
+		if terrain.isInside( self.x, self.y, -3 * terrain.MAP_SQUARE )  == false then
 			_bullets[ index ] = nil
 		end	
 	end

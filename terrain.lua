@@ -11,6 +11,8 @@ local MAP_WIDTH  = 16 -- squares
 local MAP_HEIGHT = 12 -- squares
 local MAP_SQUARE = 64 -- pixels
 
+terrain.MAP_SQUARE = MAP_SQUARE
+
 -------------------------------------------------------------------------------
 function terrain.safeXY( x, y )
 	local safe_x = x
