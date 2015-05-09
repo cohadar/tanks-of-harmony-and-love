@@ -57,7 +57,7 @@ function love.update( dt )
 		_tankCommand.client_tick = client.incTick() 
 		tank.update( localhost_tank, _tankCommand )
 		world.update_tank( 0, localhost_tank )
-		history.tankRecord( _tankCommand.client_tick, localhost_tank )
+		history.set( _tankCommand.client_tick, localhost_tank )
 	    bullets.update()
 	end
 	if count > 0 then

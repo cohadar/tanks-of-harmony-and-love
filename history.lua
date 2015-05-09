@@ -3,22 +3,16 @@ local history = {}
 
 utils = require "utils"
 
--- TODO: replace with circular buffer
 local _history = {}
 
 -------------------------------------------------------------------------------
-function history.tankRecord( tick, tank )
-	_history[ tick ] = utils.deepcopy( tank )
+function history.set( index, data )
+	_history[ index ] = utils.deepcopy( data )
 end
 
 -------------------------------------------------------------------------------
-function history.getTank( tick )
-	return utils.deepcopy( _history[ tick ] )
-end
-
--------------------------------------------------------------------------------
-function history.clearRankRecord( tick )
-	_history[ tick ] = nil
+function history.getAndClear( index )
+	return utils.deepcopy( _history[ index ] )
 end
 
 -------------------------------------------------------------------------------
