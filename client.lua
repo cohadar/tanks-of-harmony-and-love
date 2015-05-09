@@ -49,7 +49,7 @@ local function tank_sync( msg )
 		world.update_tank( msg.index, msg.tank )
 	end
 	local do_sync = false
-	local old_tank = history.get_tank( msg.client_tick )
+	local old_tank = history.getTank( msg.client_tick )
 	if old_tank == nil then
 		text.print( "nil_sync", _clientTick, msg.client_tick )
 		do_sync = true
@@ -60,7 +60,7 @@ local function tank_sync( msg )
 	if do_sync then
 		history.reset()
 		world.update_tank( 0, msg.tank )
-		history.tank_record( msg.client_tick, msg.tank )
+		history.tankRecord( msg.client_tick, msg.tank )
 		_clientTick = msg.client_tick
 	end
 end

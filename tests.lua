@@ -13,9 +13,9 @@ local smallfolk = require "libs.smallfolk"
 -------------------------------------------------------------------------------
 function m_tests.run_all()
 	local tank_a = m_tank.new()
-	m_history.tank_record( 77 , tank_a )
+	m_history.tankRecord( 77 , tank_a )
 	tank_a.x = 123.232
-	local tank_b = m_history.get_tank( 77 )
+	local tank_b = m_history.getTank( 77 )
 	assert( m_tank.neq(tank_a, tank_b) == true )
 
 	local text = string.format("%1.16e", math.pi)

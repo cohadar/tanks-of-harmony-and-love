@@ -1,31 +1,30 @@
 --- @module history
-local m_history = {}
-
-m_tank = require "tank"
-m_utils = require "utils"
-
--- TODO: replace with circular buffer
 local history = {}
 
+utils = require "utils"
+
+-- TODO: replace with circular buffer
+local _history = {}
+
 -------------------------------------------------------------------------------
-function m_history.tank_record( tick, tank )
-	history[ tick ] = m_utils.deepcopy( tank )
+function history.tankRecord( tick, tank )
+	_history[ tick ] = utils.deepcopy( tank )
 end
 
 -------------------------------------------------------------------------------
-function m_history.get_tank( tick )
-	return m_utils.deepcopy( history[ tick ] )
+function history.getTank( tick )
+	return utils.deepcopy( _history[ tick ] )
 end
 
 -------------------------------------------------------------------------------
-function m_history.clear_tank_record( tick )
-	history[ tick ] = nil
+function history.clearRankRecord( tick )
+	_history[ tick ] = nil
 end
 
 -------------------------------------------------------------------------------
-function m_history.reset()
-	history = {}
+function history.reset()
+	_history = {}
 end
 
 -------------------------------------------------------------------------------
-return m_history
+return history
