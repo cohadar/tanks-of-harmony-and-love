@@ -25,7 +25,6 @@ function love.load()
 	conf.SCREEN_HEIGHT = love.graphics.getHeight() 
 	conf.SCREEN_WIDTH_HALF  = math.floor( conf.SCREEN_WIDTH / 2 )
 	conf.SCREEN_HEIGHT_HALF = math.floor( conf.SCREEN_HEIGHT / 2 )
-
 	if conf.GAME_DEBUG then
 		love.window.setMode( 
 			conf.SCREEN_WIDTH * conf.SCALE_GRAPHICS, 
@@ -33,16 +32,14 @@ function love.load()
 			{ vsync = true, resizable = false } 
 		)
 	end
-
 	text.init()
 	tank.init()
 	client.init()
-	tests.run_all()
 	bullets.init()
 	ticker.init( love.timer.getTime() )
-
 	love.mouse.setVisible( true )
 	love.window.setTitle( "Not Connected" )
+	tests.runAll()
 end
 
 -------------------------------------------------------------------------------
@@ -93,7 +90,6 @@ function love.draw()
 	bullets.draw()
 	love.graphics.pop()
 	text.draw()
-
     quickie.core.draw()
 end
 
@@ -108,7 +104,6 @@ function love.keypressed( key, unicode )
 	elseif key == "right" or key == "d" then
 		_tankCommand.right = true
 	end
-
     quickie.keyboard.pressed( key )
 end
 
@@ -125,7 +120,6 @@ function love.keyreleased( key )
 	elseif key == " " then
 		_tankCommand.fire = true
 	end
-
     gui.keyreleased( key )
 end
 

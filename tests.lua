@@ -1,18 +1,14 @@
---- @module history
-local m_tests = {}
+--- @module tests
+local tests = {}
 
-local m_tank = require "tank"
-local m_utils = require "utils"
-local m_history = require "history"
---local serpent = require "libs.serpent"
---local slither = require "libs.slither"
---local lube2 = require "libs.lube"
---local ser = require "libs.ser"
+local tank = require "tank"
+local utils = require "utils"
+local history = require "history"
 local smallfolk = require "libs.smallfolk"
 
 -------------------------------------------------------------------------------
-function m_tests.run_all()
-	local tank_a = m_tank.new()
+function tests.runAll()
+	local tank_a = tank.new()
 
 	local text = string.format("%1.16e", math.pi)
 	local pi1 = tonumber( text )
@@ -22,24 +18,10 @@ function m_tests.run_all()
 	local pi = tonumber( text )
 	assert( math.pi == pi )
 
-	-- local text = serpent.line( { pi = math.pi } )
-	-- ok, t = serpent.load( text )
-	-- assert( ok )
-	-- assert( math.pi == t.pi )
-
-	-- local text = lube.bin:pack( { pi = math.pi } )
-	-- t = lube.bin:unpack( text )
-	-- assert( math.pi == t.pi )	
-
-	-- local text = ser( { pi = math.pi } )
-	-- t = loadstring( text )
-	-- assert( math.pi == t().pi )
-
 	local text = smallfolk.dumps( { pi = math.pi } )
 	t =  smallfolk.loads( text )
 	assert( math.pi == t.pi )
-
 end
 
 -------------------------------------------------------------------------------
-return m_tests
+return tests
