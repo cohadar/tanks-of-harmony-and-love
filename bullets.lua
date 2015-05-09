@@ -77,10 +77,15 @@ function bullets.collider( x, y, radius )
 		local dx = self.x - x
 		local dy = self.y - y
 		if dx * dx + dy * dy < radius * radius then
-			return self.x, self.y
+			return self.x, self.y, index
 		end
 	end
 	return nil, nil	
+end
+
+-------------------------------------------------------------------------------
+function bullets.remove( index )
+	_bullets[ index ] = nil
 end
 
 -------------------------------------------------------------------------------

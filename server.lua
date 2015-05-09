@@ -50,11 +50,12 @@ local function onUpdate()
         tank_command = _tankCommands[ index ]
         tank.update( tnk, tank_command )
         tank_command.client_tick = tank_command.client_tick + 1
-        local x, y = bullets.collider( tnk.x, tnk.y, tank.IMG_TANK_RADIUS )
-        if x and y then
+        local x, y, index = bullets.collider( tnk.x, tnk.y, tank.IMG_TANK_RADIUS )
+        if x and y and index then
             if tank.confirmHit( tnk, x, y ) then
                 tnk.hit_x = x
                 tnk.hit_y = y
+                bullets.remove( index )
             end
         end
     end    
