@@ -1,111 +1,111 @@
 --- @module gui
-local m_gui = {}
+local gui = {}
 
 gui = require "libs.quickie"
-m_text = require "text"
-m_client = require "client"
+text = require "text"
+client = require "client"
 
-local gui_on = true
+local _guiActive = true
 
-local start_menu = true
-local create_menu = false
-local join_menu = false
+local _menuStart = true
+local _menuCreate = false
+local _menuJoin = false
 
-local server_address = { text = "127.0.0.1" }
-local server_port    = { text = "12345" }
+local _serverAddress = { text = "127.0.0.1" }
+local _serverPort    = { text = "12345" }
 
 -------------------------------------------------------------------------------
-function m_gui.reset_menus()
-	start_menu = true
-	create_menu = false
-	join_menu = false
+function gui.resetMenus()
+	_menuStart = true
+	_menuCreate = false
+	_menuJoin = false
 end
 
 -------------------------------------------------------------------------------
-function m_gui.update( dt )
-	if gui_on == false then
+function gui.update()
+	if _guiActive == false then
 		return
 	end
 
 	gui.group.push{ grow = "down", pos = { 10, 10 } }
 
-	if start_menu then
- 		m_gui.start_menu( dt )
- 	elseif create_menu then
- 		m_gui.create_menu( dt )
- 	elseif join_menu then
- 		m_gui.join_menu( dt )
+	if _menuStart then
+ 		gui.menuStart()
+ 	elseif _menuCreate then
+ 		gui.menuCreate()
+ 	elseif _menuJoin then
+ 		gui.menuJoin()
 	end
 
     gui.group.pop{}    
 end
 
 -------------------------------------------------------------------------------
-function m_gui.start_menu( dt )
-	if gui.Button{id = "create", text = "Create", hotkey="c" } then
-		start_menu = false
-		create_menu = true
+function gui.menuStart()
+	if gui.Button{ id = "create", text = "Create", hotkey="c" } then
+		_menuStart = false
+		_menuCreate = true
     end
 
-	if gui.Button{id = "join", text = "Join", hotkey="j" } then
-		start_menu = false
-		join_menu = true
+	if gui.Button{ id = "join", text = "Join", hotkey="j" } then
+		_menuStart = false
+		_menuJoin = true
     end   
 
-	if gui.Button{id = "quit", text = "Quit", hotkey="q" } then
+	if gui.Button{ id = "quit", text = "Quit", hotkey="q" } then
 		love.event.quit()
     end      
 end
 
 -------------------------------------------------------------------------------
-function m_gui.create_menu( dt )
-    gui.group{grow = "down", function()
-        gui.Input{info = server_address, size = { 200 } }
-        gui.Input{info = server_port, size = { 200 } }
-        if gui.Button{id = "start_server", text = "Start Server", hotkey="s" } then
-			start_menu = true
-			create_menu = false
-			m_text.status("starting server", server_address.text .. ":" .. server_port.text )
-			thread = love.thread.newThread( "server.lua" )
-			thread:start()
-			channel = love.thread.getChannel( "server_channel" )
-			channel:push{ host = server_address.text, port = server_port.text }
-			m_client.connect( server_address.text, server_port.text )
-			gui_on = false			
-    	end
-    end}	
+function gui.menuCreate()
+	gui.group.push{ grow = "down" }
+    gui.Input{ info = _serverAddress, size = { 200 } }
+    gui.Input{ info = _serverPort, size = { 200 } }
+    if gui.Button{ id = "start_server", text = "Start Server", hotkey="s" } then
+		_menuStart = true
+		_menuCreate = false
+		text.status( "starting server", _serverAddress.text .. ":" .. _serverPort.text )
+		thread = love.thread.newThread( "server.lua" )
+		thread:start()
+		channel = love.thread.getChannel( "server_channel" )
+		channel:push{ host = _serverAddress.text, port = _serverPort.text }
+		client.connect( _serverAddress.text, _serverPort.text )
+		_guiActive = false			
+	end
+    gui.group.pop{}    
 end
 
 -------------------------------------------------------------------------------
-function m_gui.join_menu( dt )
-    gui.group{grow = "down", function()
-        gui.Input{info = server_address, size = { 200 } }
-        gui.Input{info = server_port, size = { 200 } }
-        if gui.Button{id = "join_server", text = "Join Server", hotkey="j" } then
-			start_menu = true
-			create_menu = false
-			m_text.status("connecting to server", server_address.text .. ":" .. server_port.text )
-			m_client.connect( server_address.text, server_port.text )
-			gui_on = false
-    	end
-    end}	
+function gui.menuJoin()
+	gui.group.push{ grow = "down" }
+    gui.Input{ info = _serverAddress, size = { 200 } }
+    gui.Input{ info = _serverPort, size = { 200 } }
+    if gui.Button{ id = "join_server", text = "Join Server", hotkey="j" } then
+		_menuStart = true
+		_menuCreate = false
+		text.status( "connecting to server", _serverAddress.text .. ":" .. _serverPort.text )
+		client.connect( _serverAddress.text, _serverPort.text )
+		_guiActive = false
+	end
+    gui.group.pop{}    
 end
 
 -------------------------------------------------------------------------------
-function m_gui.keyreleased( key )
+function gui.keyreleased( key )
 	if key == "escape" then
-		if gui_on == false then
-			m_gui.reset_menus()
-			gui_on = true
+		if _guiActive == false then
+			gui.resetMenus()
+			_guiActive = true
 		else
-			if start_menu then
-				gui_on = false
+			if _menuStart then
+				_guiActive = false
 			else
-				m_gui.reset_menus()
+				gui.resetMenus()
 			end
 		end
 	end
 end
 
 -------------------------------------------------------------------------------
-return m_gui
+return gui

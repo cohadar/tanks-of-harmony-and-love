@@ -48,7 +48,7 @@ end
 
 -------------------------------------------------------------------------------
 function love.update( dt )
-	gui.update( dt )
+	gui.update()
 	local mark = love.timer.getTime()
 	local count = 0
 	while ticker.tick( mark ) and count < 10 do
