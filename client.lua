@@ -46,7 +46,7 @@ end
 -------------------------------------------------------------------------------
 local function tank_sync( msg )
 	if conf.NETCODE_DEBUG then
-		world.update_tank( msg.index, msg.tank )
+		world.updateTank( msg.index, msg.tank )
 	end
 	local do_sync = false
 	local old_tank = history.getAndClear( msg.client_tick )
@@ -59,7 +59,7 @@ local function tank_sync( msg )
 	end
 	if do_sync then
 		history.reset()
-		world.update_tank( 0, msg.tank )
+		world.updateTank( 0, msg.tank )
 		history.set( msg.client_tick, msg.tank )
 		_clientTick = msg.client_tick
 	end

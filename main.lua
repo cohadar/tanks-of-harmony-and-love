@@ -49,10 +49,10 @@ function love.update( dt )
 	local count = 0
 	while ticker.tick( mark ) and count < 10 do
 		count = count + 1
-		local localhost_tank = world.get_tank( 0 )
+		local localhost_tank = world.getTank( 0 )
 		_tankCommand.client_tick = client.incTick() 
 		tank.update( localhost_tank, _tankCommand )
-		world.update_tank( 0, localhost_tank )
+		world.updateTank( 0, localhost_tank )
 		history.set( _tankCommand.client_tick, localhost_tank )
 	    bullets.update()
 	end
@@ -76,7 +76,7 @@ function love.draw()
 	terrain.draw()
 	love.graphics.setColor(0xFF, 0xFF, 0xFF, 0xFF)
 	if client.isConnected() then
-		for key, tnk in world.tank_pairs() do 
+		for key, tnk in world.tankPairs() do 
 			if key == 0 then
 				love.graphics.setColor(0xFF, 0xFF, 0x00, 0xFF)
 			else
@@ -85,7 +85,7 @@ function love.draw()
 			tank.draw( tnk )
 		end
 	else
-		tank.draw( world.get_tank( 0 ) )
+		tank.draw( world.getTank( 0 ) )
 	end
 	bullets.draw()
 	love.graphics.pop()

@@ -1,47 +1,47 @@
 --- @module world
-local m_world = {}
+local world = {}
 
-m_conf = require "conf"
-m_tank = require "tank"
-m_utils = require "utils"
+conf = require "conf"
+tank = require "tank"
+utils = require "utils"
 
-local tanks = {}
-tanks[ 0 ] = m_tank.new() -- tank on index zero is localhost tank
+local _tanks = {}
+_tanks[ 0 ] = tank.new() -- tank on index zero is localhost tank
 
 -- TODO: make server use world?
-
+-- TODO: add bullets to world?
 
 -------------------------------------------------------------------------------
-function m_world.get_tank( index )
-	return m_utils.deepcopy( tanks[ index ] );
+function world.getTank( index )
+	return utils.deepcopy( _tanks[ index ] );
 end
 
 -------------------------------------------------------------------------------
-function m_world.tank_pairs()
-	return pairs( tanks )
+function world.tankPairs()
+	return pairs( _tanks )
 end
 
 -------------------------------------------------------------------------------
-function m_world.update_tank( index, src_tank )
-	local tank = tanks[ index ]
-	if tank == nil then
-		tank = m_tank.new()
-		tanks[ index ] = tank
+function world.updateTank( index, src_tank )
+	local tnk = _tanks[ index ]
+	if tnk == nil then
+		tnk = tank.new()
+		_tanks[ index ] = tnk
 	end
-	m_tank.slurp( tank, src_tank )
+	tank.slurp( tnk, src_tank )
 end
 
 -------------------------------------------------------------------------------
-function m_world.connect( index )
-	if m_conf.NETCODE_DEBUG then
-		tanks[ index ] = m_utils.deepcopy( tanks[ 0 ] ) 
+function world.connect( index )
+	if conf.NETCODE_DEBUG then
+		_tanks[ index ] = utils.deepcopy( _tanks[ 0 ] ) 
 	end
 end
 
 -------------------------------------------------------------------------------
-function m_world.player_gone( index )
-	tanks[ index ] = nil
+function world.playerGone( index )
+	_tanks[ index ] = nil
 end
 
 -------------------------------------------------------------------------------
-return m_world
+return world
