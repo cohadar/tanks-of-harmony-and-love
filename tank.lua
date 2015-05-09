@@ -4,6 +4,7 @@ local tank = {}
 local terrain = require "terrain"
 local utils = require "utils"
 local bullets = require "bullets"
+local effects = require "effects"
 
 -- gameplay constants
 local FPS = 32
@@ -22,6 +23,7 @@ local IMG_TANK_BASE_CY = 38
 local IMG_TANK_TURRET = nil
 local IMG_TANK_TURRET_CX = 21.0
 local IMG_TANK_TURRET_CY = 28.0
+local IMG_TANK_RADIUS = 70
 
 local TURRET_BASE_OFFSET = 10
 local MUZZLE_LENGTH = 120
@@ -178,6 +180,7 @@ function tank.update( self, tank_command )
 		local turret_x, turret_y = calcTurretXY( self.x, self.y, self.angle )
 		local muzzle_x, muzzle_y = calcMuzzleXY( turret_x, turret_y, self.turret_angle )
 		bullets.fire( muzzle_x, muzzle_y, self.turret_angle )
+		effects.addExplosion( muzzle_x, muzzle_y, 0.1 )
 	end
 	-- update velocities
 	self.velocity = calcVelocity( self.velocity, tank_command.up, tank_command.down )
@@ -189,6 +192,9 @@ function tank.draw( self )
 	local turret_x, turret_y = calcTurretXY( self.x, self.y, self.angle )
 	love.graphics.draw( IMG_TANK_BASE, self.x, self.y, self.angle, 1.0, 1.0, IMG_TANK_BASE_CX, IMG_TANK_BASE_CY )
 	love.graphics.draw( IMG_TANK_TURRET, turret_x, turret_y, self.turret_angle, 1.0, 1.0, IMG_TANK_TURRET_CX, IMG_TANK_TURRET_CY )
+	if conf.GAME_DEBUG then
+		love.graphics.circle( "line", self.x, self.y, IMG_TANK_RADIUS )
+	end
 end
 
 -------------------------------------------------------------------------------

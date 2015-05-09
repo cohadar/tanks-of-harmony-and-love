@@ -45,5 +45,5 @@ Currently in development. ETA: 7 days.
   
 ### day9 goal: basic collision detection
   * major code cleanup
-
+  * server sync of bullets
 

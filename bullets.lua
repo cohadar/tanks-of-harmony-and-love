@@ -13,6 +13,8 @@ local MAX__bullets = 100
 local _lastBullet = 0
 local _bullets = {}
 
+-- TODO: bullet owners and networking optimization on export/import
+
 -------------------------------------------------------------------------------
 function bullets.init()
 	IMG_BULLET = love.graphics.newImage "resources/bullet.png"
@@ -20,9 +22,6 @@ end
 
 -------------------------------------------------------------------------------
 function bullets.fire( x, y, direction )
-	assert( x )
-	assert( y )
-	assert( direction )
 	local self = {}
 	self.x = x
 	self.y = y
@@ -40,7 +39,6 @@ end
 function bullets.exportTable()
 	local ret = {}
 	for _, self in pairs( _bullets ) do
-		assert( self.direction )
 		table.insert( ret, { x = self.x, y = self.y, direction = self.direction } )
 	end	
 	return ret

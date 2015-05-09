@@ -17,11 +17,10 @@ local function testBullets()
 	bullets.fire( 1, 2, 3.3 )
 	bullets.fire( 1, 2, 4.4 )
 	local package = utils.pack( bullets.exportTable() )
-	print( package )
-	msg = utils.unpack( package )
-	print( utils.pack( msg ) )
-	bullets.importTable( msg )
-	print( utils.pack( bullets.exportTable() ) )
+	local t = utils.unpack( package )
+	bullets.importTable( t )
+	package2 = utils.pack( bullets.exportTable() ) 
+	assert( package == package2 ) 
 end
 
 -------------------------------------------------------------------------------

@@ -16,6 +16,7 @@ local tests = require "tests"
 local world = require "world"
 local bullets = require "bullets"
 local ticker = require "ticker"
+local effects = require "effects"
 
 local _tankCommand = tank.newCommand()
 
@@ -56,6 +57,7 @@ function love.update( dt )
 		world.updateTank( 0, localhost_tank )
 		history.set( _tankCommand.client_tick, localhost_tank )
 	    bullets.update()
+	    effects.update()
 	end
 	if count > 0 then
 		client.update( _tankCommand )
@@ -90,6 +92,7 @@ function love.draw()
 		tank.draw( world.getTank( 0 ) )
 	end
 	bullets.draw()
+	effects.draw()
 	love.graphics.pop()
 	text.draw()
     quickie.core.draw()
