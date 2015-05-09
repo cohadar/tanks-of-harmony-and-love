@@ -1,71 +1,75 @@
 --- @module text
-local m_text = {}
+local text = {}
 
 local MAX_FLOATING = 20
-floating = {}
-local last_floating = 0
 local FPS = 60
-local last_y = 100
-status = { text = "welcome", duration = 10 * FPS, active = true }
 local FLOAT_START_Y = 100
+local FLOAT_SPACING = 12
+
+local _floating = {}
+local _lastFloating = 0
+local _lastY = 100
+local _status = { text = "welcome", duration = 10 * FPS, active = true }
 
 -------------------------------------------------------------------------------
-function m_text.print( ... )
-	if not love then
-		print( ... )
-		return 
-	end
+local function argsToStr( ... )
 	local str = ""
 	for n = 1, select( '#', ... ) do
   		local e = select( n, ... )
   		str = str .. tostring( e ) .. " "
 	end
-	last_floating = last_floating + 1
-	if last_floating > MAX_FLOATING then
-		last_floating = 1
-	end
-	if last_y > FLOAT_START_Y - 12 then
-		last_y = last_y + 12
-	else
-		last_y = FLOAT_START_Y
-	end
-	floating[ last_floating ] = { text = str, duration = 5.0 * FPS, y = last_y }	
+	return str	
 end
 
 -------------------------------------------------------------------------------
-function m_text.status( ... )
+function text.print( ... )
 	if not love then
 		print( ... )
 		return 
 	end
-	local str = ""
-	for n = 1, select( '#', ... ) do
-  		local e = select( n, ... )
-  		str = str .. tostring( e ) .. " "
+	local str = argsToStr( ... )
+	_lastFloating = _lastFloating + 1
+	if _lastFloating > MAX_FLOATING then
+		_lastFloating = 1
 	end
-	status.text = str
-	status.duration = 10 * FPS
-	status.active = true
+	if _lastY > FLOAT_START_Y - FLOAT_SPACING then
+		_lastY = _lastY + FLOAT_SPACING
+	else
+		_lastY = FLOAT_START_Y
+	end
+	_floating[ _lastFloating ] = { text = str, duration = 5.0 * FPS, y = _lastY }	
+end
+
+-------------------------------------------------------------------------------
+function text.status( ... )
+	if not love then
+		print( ... )
+		return 
+	end
+	local str = argsToStr( ... )
+	_status.text = str
+	_status.duration = 10 * FPS
+	_status.active = true
 end
 
 -------------------------------------------------------------------------------
 -- called from love2d game 
 -------------------------------------------------------------------------------
-function m_text.init()
+function text.init()
 	FLOAT_START_Y = love.graphics.getHeight() - 100
 end
 
 -------------------------------------------------------------------------------
 -- called from love2d game 
 -------------------------------------------------------------------------------
-function m_text.draw()
+function text.draw()
 	local max_y = 0
 	for i = 1, MAX_FLOATING do
-		local ft = floating[ i ]
+		local ft = _floating[ i ]
 		if ft then
 			ft.duration = ft.duration - 1
 			if ft.duration < 0 then
-				floating[ i ] = nil
+				_floating[ i ] = nil
 			else
 				love.graphics.print( ft.text, 50, ft.y )
 				ft.y = ft.y - 1
@@ -75,16 +79,16 @@ function m_text.draw()
 			end
 		end
 	end
-	last_y = max_y
-	if status.active then
-		status.duration = status.duration - 1
-		if status.duration < 0 then
-			status.active = false
+	_lastY = max_y
+	if _status.active then
+		_status.duration = _status.duration - 1
+		if _status.duration < 0 then
+			_status.active = false
 		end
-		love.graphics.print( status.text, 50, love.graphics.getHeight() - 50 )
+		love.graphics.print( _status.text, 50, love.graphics.getHeight() - 50 )
 	end
 end
 
 
 -------------------------------------------------------------------------------
-return m_text
+return text
