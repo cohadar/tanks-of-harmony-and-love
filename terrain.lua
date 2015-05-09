@@ -1,40 +1,37 @@
 --- @module terrain
-local m_terrain = {}
+local terrain = {}
 
-local m_conf = require "conf"
+local conf = require "conf"
 
 -- camera uses terrain coordinate system
-m_terrain.camera_x = 0
-m_terrain.camera_y = 0
+terrain.camera_x = 0
+terrain.camera_y = 0
 
-MAP_WIDTH  = 16 -- squares
-MAP_HEIGHT = 12 -- squares
-MAP_SQUARE = 64 -- pixels
+local MAP_WIDTH  = 16 -- squares
+local MAP_HEIGHT = 12 -- squares
+local MAP_SQUARE = 64 -- pixels
 
 -------------------------------------------------------------------------------
-function m_terrain.safe_x( x )
+function terrain.safeXY( x, y )
+	local safe_x = x
+	local safe_y = y
 	if x < 0 then
-		return 0
+		safe_x = 0
+	end
+	if y < 0 then
+		safe_y = 0
 	end
 	if x > MAP_WIDTH * MAP_SQUARE then
-		return MAP_WIDTH * MAP_SQUARE
-	end
-	return x
-end
-
--------------------------------------------------------------------------------
-function m_terrain.safe_y( y )
-	if y < 0 then
-		return 0
+		safe_x = MAP_WIDTH * MAP_SQUARE
 	end
 	if y > MAP_HEIGHT * MAP_SQUARE then
-		return MAP_HEIGHT * MAP_SQUARE
+		safe_y = MAP_HEIGHT * MAP_SQUARE
 	end
-	return y
+	return safe_x, safe_y
 end
 
 -------------------------------------------------------------------------------
-function m_terrain.is_inside( x, y, padding )
+function terrain.isInside( x, y, padding )
 	if x < padding or y < padding then
 		return false
 	end
@@ -48,14 +45,7 @@ function m_terrain.is_inside( x, y, padding )
 end
 
 -------------------------------------------------------------------------------
-function m_terrain.init()
-	--love.graphics.setBackgroundColor(0x00, 0x00, 0x00, 0xFF)
-	VISIBLE_SQUARES_X = MAP_WIDTH -- math.floor(SCREEN_WIDTH / MAP_SQUARE) + 2
-	VISIBLE_SQUARES_Y = MAP_HEIGHT -- math.floor(SCREEN_HEIGHT / MAP_SQUARE) + 2
-end
-
--------------------------------------------------------------------------------
-local function out_of_map( mx, my ) 
+local function outOfMap( mx, my ) 
 	if mx < 0 or my < 0 then
 		return true
 	end
@@ -66,26 +56,30 @@ local function out_of_map( mx, my )
 end
 
 -------------------------------------------------------------------------------
-function m_terrain.draw()
-	local top    = math.floor( ( -m_conf.SCREEN_HEIGHT_HALF + m_terrain.camera_y ) / MAP_SQUARE ) - 1
-	local bottom = math.floor( (  m_conf.SCREEN_HEIGHT_HALF + m_terrain.camera_y ) / MAP_SQUARE ) + 1
-	local left   = math.floor( ( -m_conf.SCREEN_WIDTH_HALF  + m_terrain.camera_x ) / MAP_SQUARE ) - 1
-	local right  = math.floor( (  m_conf.SCREEN_WIDTH_HALF  + m_terrain.camera_x ) / MAP_SQUARE ) + 1
-	for y = top, bottom do
-		for x = left, right do
-			local mx = x
-			local my = y
-			if out_of_map(mx, my) then
+function terrain.draw()
+	local top    = math.floor( ( -conf.SCREEN_HEIGHT_HALF + terrain.camera_y ) / MAP_SQUARE ) - 1
+	local bottom = math.floor( (  conf.SCREEN_HEIGHT_HALF + terrain.camera_y ) / MAP_SQUARE ) + 1
+	local left   = math.floor( ( -conf.SCREEN_WIDTH_HALF  + terrain.camera_x ) / MAP_SQUARE ) - 1
+	local right  = math.floor( (  conf.SCREEN_WIDTH_HALF  + terrain.camera_x ) / MAP_SQUARE ) + 1
+	for my = top, bottom do
+		for mx = left, right do
+			if outOfMap(mx, my) then
 				love.graphics.setColor(0x00, 0x00, 0x00, 0xFF)
 			elseif (mx + my) % 2 == 0 then
 				love.graphics.setColor(0xBD, 0x71, 0x40, 0xFF)
 			else
 				love.graphics.setColor(0xAD, 0x81, 0x50, 0xFF)
 			end
-			love.graphics.rectangle("fill", mx*MAP_SQUARE, my*MAP_SQUARE, MAP_SQUARE, MAP_SQUARE)
+			love.graphics.rectangle( 
+				"fill", 
+				mx * MAP_SQUARE, 
+				my * MAP_SQUARE, 
+				MAP_SQUARE, 
+				MAP_SQUARE 
+			)
 		end
 	end
 end
 
 -------------------------------------------------------------------------------
-return m_terrain
+return terrain

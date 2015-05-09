@@ -36,7 +36,6 @@ function love.load()
 
 	text.init()
 	tank.init()
-	terrain.init()
 	client.init()
 	tests.run_all()
 	bullets.init()
