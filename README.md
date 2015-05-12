@@ -54,3 +54,8 @@ Currently in development. ETA: 5 days.
     
 ### day11 goal: more gui
   * lost too much time on a colors sideproject, but it is wort it.
+  * custom GUI is hard! but hard things have worth.
+
+### day12 goal: take a break
+  * it is important to relax from time to time, no computers today.
+  
