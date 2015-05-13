@@ -5,21 +5,34 @@
 -------------------------------------------------------------------------------
 require "enet"
 require "love.timer"
-utils = require "utils"
-tank = require "tank"
-bullets = require "bullets"
-text = require "text"
-ticker = require "ticker"
+local tank = require "tank"
+local utils = require "utils"
+local bullets = require "bullets"
+local text = require "text"
+local ticker = require "ticker"
+local player = require "player"
+local terrain = require "terrain"
 
 local _tanks = {}
 local _tankCommands = {}
+local _players = {}
 
 -------------------------------------------------------------------------------
-local function onConnect( event ) 
+local function onConnect( event )  
     local index = event.peer:index()
     text.print( "connect", index, os.time() )
     _tanks[ index ] = tank.new()
     _tankCommands[ index ] = tank.newCommand()
+    _players[ index ] = player.new()
+    -- TODO: let players pick side obviously
+    if index % 2 == 0 then
+        _tanks[ index ].team = "red"
+        _players[ index ].team = "red"
+    else
+        _tanks[ index ].team = "blue"
+        _players[ index ].team = "blue"        
+    end
+    terrain.respawn( _tanks[ index ] )
     local datagram = utils.pack{ type = "index", index = index }
     event.peer:send( datagram, 0,  "unsequenced" )
 end
@@ -44,6 +57,13 @@ local function onReceive( event, server_tick )
 end
 
 -------------------------------------------------------------------------------
+local function onKill( tnk, index, killer_index )
+    _players[ index ].deaths = _players[ index ].deaths + 1
+    _players[ killer_index ].kills = _players[ killer_index ].kills + 1
+    terrain.respawn( tnk )
+end
+
+-------------------------------------------------------------------------------
 local function onUpdate()
     bullets.update()
     for index, tnk in pairs( _tanks ) do 
@@ -55,6 +75,11 @@ local function onUpdate()
             if tank.confirmHit( tnk, x, y ) then
                 tnk.hit_x = x
                 tnk.hit_y = y
+                tnk.hp = tnk.hp - 10 -- TODO: make damage directional
+                if tnk.hp <= 0 then
+                    local killer_index = index -- temporary bug for testing
+                    onKill( tnx, index, index ) -- TODO: make bullets carry killer_index
+                end
                 bullets.remove( index )
             end
         end

@@ -110,6 +110,7 @@ function love.keypressed( key, unicode )
 		_tankCommand.right = true
 	end
     quickie.keyboard.pressed( key )
+    utils.keypressed( key )
 end
 
 -------------------------------------------------------------------------------

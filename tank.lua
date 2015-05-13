@@ -19,11 +19,19 @@ local TURRET_ANGLE_VELOCITY = math.pi / 64 * 2
 local IMG_TANK_BASE = nil
 local IMG_TANK_BASE_CX = 64
 local IMG_TANK_BASE_CY = 38
+local IMG_TANK_HP_W = 8
+local IMG_TANK_HP_H = 65
+local IMG_TANK_HP_DX = -44
+local IMG_TANK_HP_DY = -32
 
 local IMG_TANK_TURRET = nil
 local IMG_TANK_TURRET_CX = 21.0
 local IMG_TANK_TURRET_CY = 28.0
 local IMG_TANK_RADIUS = 70
+local COLOR_RED_TEAM = "pastel red"
+local COLOR_BLUE_TEAM = "lightblue"
+local COLOR_HP_BAR = "dark cream"
+
 -- export
 tank.IMG_TANK_RADIUS = IMG_TANK_RADIUS
 
@@ -60,6 +68,7 @@ function tank.new()
 	self.velocity = 0.0
 	self.angle_velocity = 0.0
 	self.hp = 100
+	self.team = "red" -- "blue"
 	return self
 end
 
@@ -71,6 +80,8 @@ function tank.slurp( self, other )
 	self.turret_angle = other.turret_angle 
 	self.velocity = other.velocity
 	self.angle_velocity = other.angle_velocity
+	self.hp = other.hp
+	self.team = other.team
 end
 
 -------------------------------------------------------------------------------
@@ -192,12 +203,27 @@ end
 
 -------------------------------------------------------------------------------
 function tank.draw( self )
-	local turret_x, turret_y = calcTurretXY( self.x, self.y, self.angle )
-	love.graphics.draw( IMG_TANK_BASE, self.x, self.y, self.angle, 1.0, 1.0, IMG_TANK_BASE_CX, IMG_TANK_BASE_CY )
-	love.graphics.draw( IMG_TANK_TURRET, turret_x, turret_y, self.turret_angle, 1.0, 1.0, IMG_TANK_TURRET_CX, IMG_TANK_TURRET_CY )
-	if conf.GAME_DEBUG then
-		love.graphics.circle( "line", self.x, self.y, IMG_TANK_RADIUS )
+	-- base
+	if self.team == "red" then
+		utils.setColor( COLOR_RED_TEAM )
+	else
+		utils.setColor( COLOR_BLUE_TEAM )
 	end
+	love.graphics.draw( IMG_TANK_BASE, self.x, self.y, self.angle, 1.0, 1.0, IMG_TANK_BASE_CX, IMG_TANK_BASE_CY )
+	-- health bar
+	love.graphics.push()
+	love.graphics.translate( self.x, self.y )
+	love.graphics.rotate( self.angle )
+	utils.setColor( COLOR_HP_BAR )
+	love.graphics.rectangle( "fill", IMG_TANK_HP_DX, IMG_TANK_HP_DY, IMG_TANK_HP_W, IMG_TANK_HP_H * self.hp / 100 )
+	utils.setColor( "black" )
+	love.graphics.setLineWidth( 2.0 )
+	love.graphics.rectangle( "line", IMG_TANK_HP_DX, IMG_TANK_HP_DY, IMG_TANK_HP_W, IMG_TANK_HP_H )
+	love.graphics.pop()
+	utils.setColor( "white" )
+	-- turret
+	local turret_x, turret_y = calcTurretXY( self.x, self.y, self.angle )
+	love.graphics.draw( IMG_TANK_TURRET, turret_x, turret_y, self.turret_angle, 1.0, 1.0, IMG_TANK_TURRET_CX, IMG_TANK_TURRET_CY )
 end
 
 -------------------------------------------------------------------------------

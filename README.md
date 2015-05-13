@@ -60,4 +60,6 @@ Currently in development. ETA: 4 days.
   * it is important to relax from time to time, no computers today.
   
 ### day13 goal: teams, hp/death, leaderboard
+  * did teams and hp/death
+  * have bugs, need better multiplayer debugging!
   

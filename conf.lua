@@ -2,7 +2,7 @@
 local m_conf = {}
 
 m_conf.GAME_DEBUG = true
-m_conf.NETCODE_DEBUG = true
+m_conf.NETCODE_DEBUG = false
 
 m_conf.SCREEN_WIDTH  = 0
 m_conf.SCREEN_HEIGHT = 0

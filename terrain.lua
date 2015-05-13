@@ -2,16 +2,34 @@
 local terrain = {}
 
 local conf = require "conf"
+local utils = require "utils"
 
 -- camera uses terrain coordinate system
 terrain.camera_x = 0
 terrain.camera_y = 0
 
-local MAP_WIDTH  = 16 -- squares
+local MAP_WIDTH  = 22 -- squares
 local MAP_HEIGHT = 12 -- squares
 local MAP_SQUARE = 64 -- pixels
 
+local RED_TEAM_SPAWN = { x = 4 * MAP_SQUARE, y = MAP_HEIGHT / 2 * MAP_SQUARE }
+local BLUE_TEAM_SPAWN = { x = ( MAP_WIDTH - 4 ) * MAP_SQUARE, y = MAP_HEIGHT / 2 * MAP_SQUARE }
+
 terrain.MAP_SQUARE = MAP_SQUARE
+
+-------------------------------------------------------------------------------
+function terrain.respawn( tnk )
+	if tnk.team == "red" then
+		tnk.x = RED_TEAM_SPAWN.x
+		tnk.y = RED_TEAM_SPAWN.y
+		tnk.angle = 0
+	else
+		tnk.x = BLUE_TEAM_SPAWN.x
+		tnk.y = BLUE_TEAM_SPAWN.y
+		tnk.angle = utils.cleanAngle( math.pi )
+	end
+	tnk.hp = 100
+end
 
 -------------------------------------------------------------------------------
 function terrain.safeXY( x, y )
@@ -29,7 +47,7 @@ function terrain.safeXY( x, y )
 	if y > MAP_HEIGHT * MAP_SQUARE then
 		safe_y = MAP_HEIGHT * MAP_SQUARE
 	end
-	return safe_x, safe_y
+	return math.floor( safe_x + 0.5 ), math.floor( safe_y + 0.5 )
 end
 
 -------------------------------------------------------------------------------
