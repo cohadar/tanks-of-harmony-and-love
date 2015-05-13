@@ -1,0 +1,5 @@
+tank bases: pastel red vs lightblue
+tank caterpillars: steel
+turret: light blue grey
+turret hatchet: bluegrey
+healthbar: dark cream
