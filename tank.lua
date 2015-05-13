@@ -59,6 +59,7 @@ function tank.new()
 	self.turret_angle = 0.0
 	self.velocity = 0.0
 	self.angle_velocity = 0.0
+	self.hp = 100
 	return self
 end
 
