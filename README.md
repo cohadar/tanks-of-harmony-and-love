@@ -1,7 +1,7 @@
 # Mighty Cohadar's Tanks of Harmony and Love
 Network Multiplayer tank game in Love2D engine.
 
-Currently in development. ETA: 5 days.
+Currently in development. ETA: 4 days.
 
 <img src="https://github.com/cohadar/tanks-of-harmony-and-love/blob/master/screenshot.png">
 
@@ -58,4 +58,6 @@ Currently in development. ETA: 5 days.
 
 ### day12 goal: take a break
   * it is important to relax from time to time, no computers today.
+  
+### day13 goal: teams, hp/death, leaderboard
   
