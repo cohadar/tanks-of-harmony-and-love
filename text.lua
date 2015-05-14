@@ -1,6 +1,8 @@
 --- @module text
 local text = {}
 
+local logger = require "logger"
+
 local MAX_FLOATING = 20
 local FPS = 60
 local FLOAT_START_Y = 100
@@ -34,6 +36,7 @@ function text.print( ... )
 		_lastY = FLOAT_START_Y
 	end
 	_floating[ _lastFloating ] = { text = str, duration = 5.0 * FPS, y = _lastY }	
+	logger.info( "text.print: " .. str )
 end
 
 -------------------------------------------------------------------------------
@@ -42,6 +45,7 @@ function text.status( ... )
 	_status.text = str
 	_status.duration = 10 * FPS
 	_status.active = true
+	logger.info( "text.status: " .. str )
 end
 
 -------------------------------------------------------------------------------
