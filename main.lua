@@ -151,7 +151,7 @@ end
 -------------------------------------------------------------------------------
 function love.threaderror( thread, errorstr )
 	text.status( errorstr )
-	print( errorstr )
+	text.print( errorstr )
 end
 
 -------------------------------------------------------------------------------

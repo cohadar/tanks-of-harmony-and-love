@@ -18,6 +18,15 @@ local _tankCommands = {}
 local _players = {}
 
 -------------------------------------------------------------------------------
+local function onInit()  
+    for i = 1, 256 do
+        _tanks[ i ] = tank.new()
+        _tankCommands[ i ] = tank.newCommand()
+        _players[ i ] = player.new()
+    end
+end
+
+-------------------------------------------------------------------------------
 local function onConnect( event )  
     local index = event.peer:index()
     text.print( "connect", index, os.time() )
@@ -78,7 +87,7 @@ local function onUpdate()
                 tnk.hp = tnk.hp - 10 -- TODO: make damage directional
                 if tnk.hp <= 0 then
                     local killer_index = index -- temporary bug for testing
-                    onKill( tnx, index, index ) -- TODO: make bullets carry killer_index
+                    onKill( tnk, index, index ) -- TODO: make bullets carry killer_index
                 end
                 bullets.remove( index )
             end
@@ -104,6 +113,7 @@ end
 
 -------------------------------------------------------------------------------
 local function startServer( host, port )
+    onInit()
     server_address = host .. ":" .. port
     text.print( "starting server", server_address )
     local host = enet.host_create( server_address )

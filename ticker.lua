@@ -22,9 +22,6 @@ end
 -------------------------------------------------------------------------------
 function ticker.tick( mark, p )
 	if t + DT < mark then
-		if p then
-			print(mark - t)
-		end
 		t = t + DT
 		return true
 	end

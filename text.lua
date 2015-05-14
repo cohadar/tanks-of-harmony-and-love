@@ -23,10 +23,6 @@ end
 
 -------------------------------------------------------------------------------
 function text.print( ... )
-	if not love then
-		print( ... )
-		return 
-	end
 	local str = argsToStr( ... )
 	_lastFloating = _lastFloating + 1
 	if _lastFloating > MAX_FLOATING then
@@ -42,10 +38,6 @@ end
 
 -------------------------------------------------------------------------------
 function text.status( ... )
-	if not love then
-		print( ... )
-		return 
-	end
 	local str = argsToStr( ... )
 	_status.text = str
 	_status.duration = 10 * FPS

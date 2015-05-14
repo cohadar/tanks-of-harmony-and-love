@@ -1,7 +1,7 @@
 --- @module effects
 local effects = {}
 
-local utils = require "utils"
+local text = require "text"
 
 local _effects = {}
 
@@ -29,7 +29,7 @@ function effects.draw()
 			fx.radius = fx.radius + 2
 			love.graphics.circle( "fill", fx.x, fx.y, fx.radius )
 		else
-			utils.print("unknown effect type", fx.type )
+			text.print("unknown effect type", fx.type )
 		end
 	end	
 end

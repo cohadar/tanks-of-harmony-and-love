@@ -3,6 +3,7 @@ local utils = {}
 
 local smallfolk = require "libs.smallfolk"
 local rgb = require "libs.rgb"
+local text = require "text"
 
 -------------------------------------------------------------------------------
 -- for testing only
@@ -53,16 +54,16 @@ end
 function utils.keypressed( key )
     if key     == "c" then
         utils.x = utils.x + 1
-        print( "utils.x", utils.x )
+        text.print( "utils.x", utils.x )
     elseif key == "z" then
         utils.x = utils.x - 1
-        print( "utils.x", utils.x )
+        text.print( "utils.x", utils.x )
     elseif key == "u" then
         utils.y = utils.y + 1
-        print( "utils.y", utils.y )
+        text.print( "utils.y", utils.y )
     elseif key == "t" then
         utils.y = utils.y - 1
-        print( "utils.y", utils.y )
+        text.print( "utils.y", utils.y )
     end
 end
 
